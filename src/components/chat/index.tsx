@@ -2,8 +2,6 @@ import React from "react";
 
 import styles from "./styles.module.css";
 
-export { ChatFunctionCall } from "./function_call";
-
 export function Chat({ children }) {
   return <div className={styles.chat}>{children}</div>;
 }

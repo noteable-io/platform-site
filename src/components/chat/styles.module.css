@@ -52,10 +52,7 @@
 }
 
 .messageContent {
-  flex-direction: column;
-  flex-grow: 1;
-  display: flex;
-  gap: 0.75rem;
+  flex: 1 1 auto;
 }
 
 .logoWrapper {
