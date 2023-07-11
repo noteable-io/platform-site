@@ -6,42 +6,44 @@ type FeatureItem = {
   title: string;
   Svg: React.ComponentType<React.ComponentProps<'svg'>>;
   description: JSX.Element;
+  url: string;
 };
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
+    title: 'genai',
     Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        IPython extension to help you code better with the power of OpenAI's Large Language Models.
       </>
     ),
+    url: 'https://app.noteable.io/f/1605d16d-f5d3-4099-8fec-2ca727075b3b/Introducing-Genai.ipynb',
   },
   {
-    title: 'Focus on What Matters',
+    title: 'origami',
     Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Origami is the official Python SDK for talking to Noteable Notebooks.
       </>
     ),
+    url: 'https://noteable-origami.readthedocs.io/en/latest/',
   },
   {
-    title: 'Powered by React',
+    title: 'dx',
     Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        dx provides convenient formatting and IPython display
+        formatter registration for tabular data and DEX media types.
       </>
     ),
+    url: 'https://noteable-io.github.io/dx/',
   },
 ];
 
-function Feature({title, Svg, description}: FeatureItem) {
+function Feature({title, Svg, description, url}: FeatureItem) {
   return (
     <div className={clsx('col col--4')}>
       <div className="text--center">
@@ -50,6 +52,11 @@ function Feature({title, Svg, description}: FeatureItem) {
       <div className="text--center padding-horiz--md">
         <h3>{title}</h3>
         <p>{description}</p>
+      </div>
+      <div className="text--center">
+        <a href={url} target="_blank" rel="noreferrer">
+          Learn more about {title}
+        </a>
       </div>
     </div>
   );
