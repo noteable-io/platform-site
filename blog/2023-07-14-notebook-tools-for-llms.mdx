@@ -1,0 +1,168 @@
+---
+slug: notebook-tools-for-llms
+title: "Notebooks: A Tool for LLMs"
+authors: [kyle]
+tags: [chatgpt, ipython, notebooks, noteable]
+---
+
+import { OutputBlock } from "@site/src/components/cell";
+
+import {
+  Chat,
+  UserMessage,
+  AssistantMessage,
+  ChatFunctionCall,
+} from "@site/src/components/chat";
+
+## Introduction
+
+```python cell count=1
+import openai
+import noteable
+```
+
+The Noteable Plugin for ChatGPT exposes rich computational notebooks to GPT Models, allowing you to experiment with data in new ways and lean on ChatGPT as an automated agent.
+
+Notebooks are a pivotal tool for data scientists, researchers, and engineers. Now, they're available for everyone. Notebooks allow us to communicate ideas, explore data, and share results. Notebooks are a tool for thinking. Most people use them to explore data. They're also a great little laboratory for experimenting with APIs.
+
+Artificial Intelligence companies like OpenAI clearly included notebooks as part of the corpus of training data because their **Large Language Models know notebooks**. ChatGPT can create well documented notebooks with code and prose. It has shown me whole new ways of using libraries and analyzing data that previously were out of reach or just unknown to me. Anyone who knows notebooks and interactive computing in general, knows what this means. It's a big deal.
+
+<Chat>
+<UserMessage avatar="https://github.com/rgbkrk.png">
+
+Please create an ETL notebook for the [IMDb dataset](https://datasets.imdbws.com/)
+
+</UserMessage>
+
+<AssistantMessage avatar="">
+
+<ChatFunctionCall>
+
+```json chatcall request plugin=Noteable
+{
+  "notebook_name": "IMDb_ETL.ipynb"
+}
+```
+
+```json chatcall response plugin=Noteable
+{
+  "project_id": "3b179d03-9efb-4f6c-ad7a-fa0a478d45e4",
+  "file_id": "d3d944d0-5a18-48b3-bf3e-fdb59d8a5dea",
+  "notebook_url": "https://app.noteable.io/f/d3d944d0-5a18-48b3-bf3e-fdb59d8a5dea/IMDb_ETL.ipynb",
+  "assistant_hint": "The user can now follow along with your cell work at the notebook link."
+}
+```
+
+</ChatFunctionCall>
+
+I have created a new notebook named [IMDb_ETL.ipynb](https://app.noteable.io/f/d3d944d0-5a18-48b3-bf3e-fdb59d8a5dea/IMDb_ETL.ipynb) for the IMDb dataset ETL process. You can access it directly. Now, let's start with the ETL process.
+
+</AssistantMessage>
+</Chat>
+
+Early experiments with integrating LLMs into notebooks were very promising. Open source projects have shown the potential of integrating IPython and Jupyter with Large Language Models ([Jupyter AI](https://github.com/jupyterlab/jupyter-ai), [genai](https://github.com/noteable-io/genai)). These projects allow for deeper exception handling, inline assistance, and even code generation. It's fantastic. Due to technical limitations in open source Jupyter though, there's no realtime server side access to the notebook document model.
+
+What we needed was a way for the model to be able to create and edit cells, start new notebooks, and debug its own code. Everything that would be part of the workflow for a data scientist, data engineer, or anyone else looking to learn in a notebook.
+
+## Noteable's Headless Execution
+
+Building on top of our foundations for [realtime collaboration and scheduled notebooks](https://github.com/noteable-io/papermill-origami), we began work on a plugin that would allow the model to do just that. It started with creating notebooks
+
+```python cell count=2
+noteable.create_notebook(
+    project_id=default_project,
+    notebook_name="IMDb_ETL.ipynb"
+)
+```
+
+and creating cells
+
+```python cell count=3
+noteable.create_cell(
+  file_id=conversation_notebook,
+  cell_type="markdown",
+  source="""# IMDb Dataset ETL
+This notebook will perform the Extract, Transform, Load (ETL) process
+for the IMDb dataset available at https://datasets.imdbws.com/. The
+dataset includes several files, we will focus on the following:
+
+- `title.basics.tsv.gz`: Contains information for titles.
+- `title.ratings.tsv.gz`: Contains the IMDb rating and votes information for titles.
+
+Let's start by downloading the data."""
+)
+```
+
+What delighted me the most out of all of this is that ChatGPT knew how to create literate computational notebooks right out of the gate.
+
+```python cell count=3
+cell = noteable.create_cell(
+  file_id=conversation_notebook,
+  cell_type="code",
+  source="""
+!mkdir -p /tmp/imdb_data
+!wget -nc -P /tmp/imdb_data/ https://datasets.imdbws.com/title.basics.tsv.gz
+!wget -nc -P /tmp/imdb_data/ https://datasets.imdbws.com/title.ratings.tsv.gz
+""".strip()
+)
+
+noteable.run_cell(cell_id=cell['id'])
+```
+
+From here, ChatGPT is able to analyze data and navigate its way through errors. It's ability to debug is incredible. It sometimes gets stuck, but who among us doesn't have that problem?
+
+## Contrasting with OpenAI's Code Interpreter
+
+There isn't just one way to code. There are also many ways to create data products. The difference between these tools is in the interface and the environment provided. The Large Language Model underneath is roughly the same. Clearly, I love using OpenAI's Large Language Models. It's not really just about the models though. They've created really great APIs and standards for working with these APIs, relying on OpenAPI and JSON Schemas extensively.
+
+- ChatGPT Plugins
+- Chat Completions API
+- Function Calling
+
+I could write about all of these across many many posts.
+
+Some of the exact same reasons you see magic 🪄 when using Noteable is the same reason you see magic 🪄 using OpenAI's Code Interpreter. It can reason, debug, run code, analyze data, etc. What's even better is that Code Interpreter is fast to spin up and work with. They've done great prompting and RLHF behind the scenes to make it a great experience.
+
+One of OpenAI Code Interpreter's greatest strengths is also a core limitation. The very nature of code interpreter is ephemeral.
+
+Back in 2014, I [created `tmpnb`](https://speakerdeck.com/rgbkrk/tmpnb-at-pytexas?slide=10) (a precursor to binder and JupyterHub) to give people access to notebook servers instantly. My target was getting notebook access down to milliseconds. This went next level as we in IPython (not yet Jupyter!) cranked this up to 11x to [showcase the IPython Notebook to all readers of Nature Magazine](https://www.nature.com/articles/515151a).
+
+Not long after we had this deployed for everyone, we started finding out that people wanted to use our temporary notebooks for real analysis work. We fundamentally disrupted the problem of _access_ and people wanted _more_.
+
+They want persistent access to their
+
+What becomes painfully clear after you're using an ephemeral system is that you want more levers. At least for me, I want the right levers to work on in my own notebook environment. Access to data files, environment variables/secrets, and databases.
+
+What a notebook provides is a view into yuor workspace. It's a living stable thing youo can share.
+
+## Code Interpreter vs. Noteable Notebooks
+
+There's a bit of a debate about OpenAI's Code Interpreter vs. Noteable Notebooks. That's silly. They're both using GPT models! OpenAI is providing several incredible bits we've been building on top of:
+
+The Code Interpreter model has its limitations though.
+
+## Noteable, ChatGPT, and the Code Interpreter
+
+# Outline
+
+- Delight about how these large language models can reason about coding and analysis tasks
+- Initial experiments with OpenAI's models, with `genai` and exception handling
+- Plugin: from `dangermode` to `noteable`
+- Scaling up, a la tmpnb
+- Futures
+
+## Strengths
+
+- The result of computation with the model is stored in a data driven document, a notebook
+- We believe in the power of notebooks as expressive reproducible communication tools
+- Flexible hosted environment that gives you access to what you need
+
+the result of computation with the model is stored in a data driven document, a notebook
+We believe in the power of notebooks as expressive reproducible communication tools
+and hosted environment gives you access to what you need
+In both code interpreter and Noteable it helps you see the raw power in OpenAI's Large Language Models. I can't wait to see these models improve for all computational workflows. There is a lot to explore, automate, and discover.
+There are a few areas where the Noteable plugin is much weaker:
+
+speed of startup -- we require starting up a session with a notebook and then creating cells. This is not as fast as "just write code immediately", but it gives you persistence
+We do not control the model, temperature, etc.
+These last two are much better handled with direct usage of our realtime service using chat functions, where there's a lot more control and even speed, context, and customization.
