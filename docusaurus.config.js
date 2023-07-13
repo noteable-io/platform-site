@@ -55,6 +55,14 @@ const config = {
         },
       }),
     ],
+    [
+      '@docusaurus/preset-classic',
+      {
+        googleTagManager: {
+          containerId: 'GTM-P7TZQLM',
+        },
+      },
+    ],
   ],
 
   themeConfig:
