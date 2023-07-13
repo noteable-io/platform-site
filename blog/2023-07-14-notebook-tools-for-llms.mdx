@@ -69,7 +69,7 @@ What we needed was a way for the model to be able to create and edit cells, star
 Building on top of our foundations for [realtime collaboration and scheduled notebooks](https://github.com/noteable-io/papermill-origami), we began work on a plugin that would allow the model to do just that. It started with creating notebooks
 
 ```python cell count=2
-noteable.create_notebook(
+conversation_notebook = await noteable.create_notebook(
     project_id=default_project,
     notebook_name="IMDb_ETL.ipynb"
 )
@@ -78,10 +78,7 @@ noteable.create_notebook(
 and creating cells
 
 ```python cell count=3
-noteable.create_cell(
-  file_id=conversation_notebook,
-  cell_type="markdown",
-  source="""# IMDb Dataset ETL
+source="""# IMDb Dataset ETL
 This notebook will perform the Extract, Transform, Load (ETL) process
 for the IMDb dataset available at https://datasets.imdbws.com/. The
 dataset includes several files, we will focus on the following:
@@ -90,79 +87,51 @@ dataset includes several files, we will focus on the following:
 - `title.ratings.tsv.gz`: Contains the IMDb rating and votes information for titles.
 
 Let's start by downloading the data."""
+
+await noteable.create_cell(
+  file_id=conversation_notebook,
+  cell_type="markdown",
+  source=source
 )
 ```
 
 What delighted me the most out of all of this is that ChatGPT knew how to create literate computational notebooks right out of the gate.
 
 ```python cell count=3
-cell = noteable.create_cell(
-  file_id=conversation_notebook,
-  cell_type="code",
-  source="""
+source = """
 !mkdir -p /tmp/imdb_data
 !wget -nc -P /tmp/imdb_data/ https://datasets.imdbws.com/title.basics.tsv.gz
 !wget -nc -P /tmp/imdb_data/ https://datasets.imdbws.com/title.ratings.tsv.gz
 """.strip()
-)
 
-noteable.run_cell(cell_id=cell['id'])
+cell = await conversation_notebook.create_cell(source)
+outputs = await cell.run()
 ```
 
 From here, ChatGPT is able to analyze data and navigate its way through errors. It's ability to debug is incredible. It sometimes gets stuck, but who among us doesn't have that problem?
 
 ## Contrasting with OpenAI's Code Interpreter
 
-There isn't just one way to code. There are also many ways to create data products. The difference between these tools is in the interface and the environment provided. The Large Language Model underneath is roughly the same. Clearly, I love using OpenAI's Large Language Models. It's not really just about the models though. They've created really great APIs and standards for working with these APIs, relying on OpenAPI and JSON Schemas extensively.
+There isn't just one way to code. There are also many ways to create data products. The difference between these tools is in the interface and the environment provided. The Large Language Model underneath is roughly the same.
+
+Some of the exact same reasons you see magic 🪄 when using Noteable is the same reason you see magic 🪄 using OpenAI's Code Interpreter. It can reason, debug, run code, analyze data, etc. What's even better is that Code Interpreter is fast to spin up and work with. They've done great prompting and RLHF behind the scenes to make it a great experience. On top of that, they're also faster to startup.
+
+One of OpenAI Code Interpreter's greatest strengths is also a core limitation. The very nature of code interpreter is ephemeral. The greatest thing about ephemeral locked down compute is that you can aggressively cache. I know this from [creating tmpnb back in 2014](https://speakerdeck.com/rgbkrk/tmpnb-at-pytexas?slide=10), which we used to [provide notebooks to readers of an IPython article in the Nature Journal](https://www.nature.com/articles/515151a). That also formed the foundations of JupyterHub's Dockerspawner and greatly [informed how we needed to optimize the Jupyter Notebook](https://lambdaops.com/ops-lessons-and-instant-temporary-ipython-jupyter-notebooks/). If you're using JupyterHub now, you're benefiting from some of the ops lessons learned way back then.
+
+Not long after we had this deployed for everyone, we started finding out that people wanted to use our temporary notebooks for real analysis work. We fundamentally disrupted the problem of _access_ and people wanted _more_.
+
+## Providing Deeper Access with Notebooks
+
+Eventually, you'll want more levers. I know I do. I need access to data files, environment variables/secrets, and databases. Exposing notebooks through ChatGPT provides a window into this workspace:
+
+- The result of computation with the model is stored in a data driven document, a notebook
+- Notebooks are expressive, reproducible communication tools that you can collaborate on with other people
+- A flexible hosted environment expands the possibilities of analysis tasks available
+
+As a ChatGPT Plugin, we're limited in the way in which we can expose notebook compute. In order to create a plugin we had to wrap our realtime API with a REST API to allow the GPT models to have access to notebook operations like creating, running, and updating cells. Given that we created our notebook platform for analysis work, we aimed for reproducibility as one of our design constraints. That means that project files for users are mounted with their kernels/notebooks and they have access to their data connections and secrets. Compared to code interpreter, it's not as fast to just have the LLM write code. It gives you persistence though. We also don't control the model or the temperature.
+
+Some of the limitations here are much better handled with direct usage of our realtime service along with OpenAI's chat functions, where there's a lot more control and even speed, context, and customization. OpenAI has created really great APIs and standards for working with their Large Language Models, relying on OpenAPI and JSON Schemas extensively. There are three key components of their APIs that I plan to build on top of with notebooks:
 
 - ChatGPT Plugins
 - Chat Completions API
 - Function Calling
-
-I could write about all of these across many many posts.
-
-Some of the exact same reasons you see magic 🪄 when using Noteable is the same reason you see magic 🪄 using OpenAI's Code Interpreter. It can reason, debug, run code, analyze data, etc. What's even better is that Code Interpreter is fast to spin up and work with. They've done great prompting and RLHF behind the scenes to make it a great experience.
-
-One of OpenAI Code Interpreter's greatest strengths is also a core limitation. The very nature of code interpreter is ephemeral.
-
-Back in 2014, I [created `tmpnb`](https://speakerdeck.com/rgbkrk/tmpnb-at-pytexas?slide=10) (a precursor to binder and JupyterHub) to give people access to notebook servers instantly. My target was getting notebook access down to milliseconds. This went next level as we in IPython (not yet Jupyter!) cranked this up to 11x to [showcase the IPython Notebook to all readers of Nature Magazine](https://www.nature.com/articles/515151a).
-
-Not long after we had this deployed for everyone, we started finding out that people wanted to use our temporary notebooks for real analysis work. We fundamentally disrupted the problem of _access_ and people wanted _more_.
-
-They want persistent access to their
-
-What becomes painfully clear after you're using an ephemeral system is that you want more levers. At least for me, I want the right levers to work on in my own notebook environment. Access to data files, environment variables/secrets, and databases.
-
-What a notebook provides is a view into yuor workspace. It's a living stable thing youo can share.
-
-## Code Interpreter vs. Noteable Notebooks
-
-There's a bit of a debate about OpenAI's Code Interpreter vs. Noteable Notebooks. That's silly. They're both using GPT models! OpenAI is providing several incredible bits we've been building on top of:
-
-The Code Interpreter model has its limitations though.
-
-## Noteable, ChatGPT, and the Code Interpreter
-
-# Outline
-
-- Delight about how these large language models can reason about coding and analysis tasks
-- Initial experiments with OpenAI's models, with `genai` and exception handling
-- Plugin: from `dangermode` to `noteable`
-- Scaling up, a la tmpnb
-- Futures
-
-## Strengths
-
-- The result of computation with the model is stored in a data driven document, a notebook
-- We believe in the power of notebooks as expressive reproducible communication tools
-- Flexible hosted environment that gives you access to what you need
-
-the result of computation with the model is stored in a data driven document, a notebook
-We believe in the power of notebooks as expressive reproducible communication tools
-and hosted environment gives you access to what you need
-In both code interpreter and Noteable it helps you see the raw power in OpenAI's Large Language Models. I can't wait to see these models improve for all computational workflows. There is a lot to explore, automate, and discover.
-There are a few areas where the Noteable plugin is much weaker:
-
-speed of startup -- we require starting up a session with a notebook and then creating cells. This is not as fast as "just write code immediately", but it gives you persistence
-We do not control the model, temperature, etc.
-These last two are much better handled with direct usage of our realtime service using chat functions, where there's a lot more control and even speed, context, and customization.
