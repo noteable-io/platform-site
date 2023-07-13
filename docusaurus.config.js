@@ -53,15 +53,10 @@ const config = {
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
         },
-      }),
-    ],
-    [
-      '@docusaurus/preset-classic',
-      {
         googleTagManager: {
-          containerId: 'GTM-P7TZQLM',
+          containerId: "GTM-P7TZQLM",
         },
-      },
+      }),
     ],
   ],
 
