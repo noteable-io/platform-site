@@ -1,0 +1,79 @@
+.functionVerbage {
+  padding-right: 5px;
+  padding-left: 5px;
+}
+
+.details > .summary {
+  list-style: none;
+}
+
+.summary::-webkit-details-marker,
+.summary::marker {
+  content: none;
+  display: none;
+}
+
+.summary {
+  color: rgb(32, 33, 35);
+
+  cursor: pointer;
+  user-select: none;
+  background-color: rgba(236, 236, 241, 1);
+
+  border-radius: 0.25rem;
+  padding: 0.75rem;
+  display: inline-block;
+  align-items: flex-start;
+
+  font-size: 0.8rem;
+  line-height: 1rem;
+
+  display: inline-flex;
+}
+
+[theme="dark"] .summary {
+  background-color: (32, 33, 35, 1);
+}
+
+.details {
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.content {
+  margin-top: 10px;
+}
+
+.icon {
+  margin-left: 3rem;
+  gap: 0.5rem;
+}
+
+.icon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.expandIcon {
+  display: block; /* Show this by default */
+}
+
+.collapseIcon {
+  display: none;
+}
+
+.details[open] .expandIcon {
+  display: none; /* Hide when open */
+}
+
+.details[open] .collapseIcon {
+  display: block; /* Show this when open */
+}
+
+.callInfo {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}

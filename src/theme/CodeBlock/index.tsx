@@ -6,10 +6,27 @@ import CodeBlock from "@theme-original/CodeBlock";
 
 import type { Props as BaseProps } from "@theme/CodeBlock";
 
+import styles from "./styles.module.css";
+
 type Props = BaseProps & {
   cell?: boolean;
   output?: boolean;
   count?: number;
+  chatcall?: boolean;
+  request?: boolean;
+  response?: boolean;
+  plugin?: string;
+};
+
+export const ReqRep = ({ children, heading }) => {
+  return (
+    <div className={styles.call}>
+      <div className={styles.callHeading}>
+        <span style={{ textTransform: "uppercase" }}>{heading}</span>
+      </div>
+      <div className={styles.callBody}>{children}</div>
+    </div>
+  );
 };
 
 export default function CodeBlockWrapper(props: Props) {
@@ -48,8 +65,26 @@ export default function CodeBlockWrapper(props: Props) {
    */
 
   // Regular Code Blocks
-  if (!props.cell && !props.output) {
+  if (!props.cell && !props.output && !props.chatcall) {
     return <CodeBlock {...props} />;
+  }
+
+  if (props.chatcall) {
+    // HACK: Allow the CodeBlockContainer to know this is an output block
+    const className = clsx(props.className, "chatcall");
+
+    let heading = "";
+    if (props.request) {
+      heading = `Request to ${props.plugin}`;
+    } else if (props.response) {
+      heading = `Response from ${props.plugin}`;
+    }
+
+    return (
+      <ReqRep {...props} heading={heading}>
+        <CodeBlock {...props} className={className} />
+      </ReqRep>
+    );
   }
 
   let count =

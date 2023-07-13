@@ -27,6 +27,15 @@ export default function CodeBlockContainer({ as: As, ...props }) {
     );
   }
 
+  if (props.className.includes("chatcall")) {
+    prismCssVariables = {};
+    className = clsx(
+      props.className,
+      styles.chatCallContainer
+      // ThemeClassNames.common.codeBlock
+    );
+  }
+
   return (
     <As
       // Polymorphic components are hard to type, without `oneOf` generics
