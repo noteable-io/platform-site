@@ -377,7 +377,7 @@ One of the strengths of OpenAI's Code Interpreter is that it's fast to start up.
 
 However, one aspect of the Code Interpreter's design limits its capability: it's ephemeral. This approach allows for aggressive caching (speed to startup), but it also means you lose your work when your session ends.
 
-I know this from [creating tmpnb back in 2014](https://speakerdeck.com/rgbkrk/tmpnb-at-pytexas?slide=10), which we used to [provide notebooks to readers of an IPython article in the Nature Journal](https://www.nature.com/articles/515151a). Not long after we had this deployed for everyone, we started finding out that people wanted to use our temporary notebooks for real analysis work. We fundamentally disrupted the problem of _access_ and people wanted _more_.
+I know this from [creating tmpnb back in 2014](https://speakerdeck.com/rgbkrk/tmpnb-at-pytexas?slide=10), which we used to [provide notebooks to readers of an IPython article in the Nature Journal](https://www.nature.com/articles/515151a). Not long after we had this deployed for everyone, we started finding out that people wanted to use our temporary notebooks for real analysis work. We fundamentally disrupted the problem of _access_ and people wanted _more_. That means access to external APIs and especially external SQL data sources. Done securely, this is the most useful advancement in user interfaces to Large Language Models we've seen yet.
 
 Whether you're using OpenAI's Code Interpreter, Jupyter extensions, or Noteable, the underlying models from OpenAI excel at performing analysis work and collaborating with human users.
 
@@ -392,6 +392,8 @@ Notebooks document computations. They're expressive, reproducible communication 
 While LLMs are powerful as standalone tools, they are even more powerful when exposed to notebooks. I've always been excited to enable more people to feel the delight of interactive computing. Now it feels like that reach is much more broad and more accessible.
 
 My goal is to build excellent environments for collaborative analysis and development. To enable everyone, from small teams to massive scale. We're seeing a glimpse of this now with Noteable and OpenAI's GPT models. I can't wait to see what you create.
+
+My goal is to build excellent environments for collaborative analysis and development. To enable everyone, from small teams to massive scale. We're seeing a glimpse of this now with Noteable and OpenAI's GPT models. Collaboration now includes not only human peers but also **artificial intelligence in the same document**. I can't wait to see what you create.
 
 <a
   class="button button--primary"
