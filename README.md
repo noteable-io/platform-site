@@ -34,16 +34,4 @@ This command starts a local HTML server for testing the static content generated
 
 ### Deployment
 
-Using SSH:
-
-```
-$ USE_SSH=true npm run deploy
-```
-
-Not using SSH:
-
-```
-$ GIT_USER=<Your GitHub username> npm run deploy
-```
-
-When we're using GitHub pages for hosting, this command is a convenient way to build the site and push to the `gh-pages` branch.
+When commits are merged to main, they're automatically deployed to Pages using [pages.yml](.github%2Fworkflows%2Fpages.yml)
