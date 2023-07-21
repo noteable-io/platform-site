@@ -21,7 +21,7 @@ import openai
 import noteable
 ```
 
-The Noteable Plugin for ChatGPT exposes rich computational notebooks to GPT Models, allowing you to experiment with data in new ways and lean on ChatGPT as an automated agent.
+The Noteable Plugin for ChatGPT exposes rich computational notebooks to GPT Models, allowing you to experiment with data, analysis, and interactive computing in new ways.
 
 Notebooks are a pivotal tool for data scientists, researchers, and engineers. Now, they're available for everyone. Notebooks allow us to communicate ideas, explore data, and share results. Notebooks are a tool for thinking. Most people use them to explore data. They're also a great little laboratory for experimenting with APIs.
 
@@ -55,83 +55,338 @@ Please create an ETL notebook for the [IMDb dataset](https://datasets.imdbws.com
 
 </ChatFunctionCall>
 
-I have created a new notebook named [IMDb_ETL.ipynb](https://app.noteable.io/f/d3d944d0-5a18-48b3-bf3e-fdb59d8a5dea/IMDb_ETL.ipynb) for the IMDb dataset ETL process. You can access it directly. Now, let's start with the ETL process.
+I've created new notebook named <a>IMDb_ETL_Notebook.ipynb</a>.
+
+Now, let's start by writing the ETL (Extract, Transform, Load) process. The ETL process involves:
+
+1. Extract: Download the IMDb dataset.
+2. Transform: Clean and transform the data into a suitable format.
+3. Load: Load the transformed data into a data structure or database for analysis.
+
+Let's start with the extraction process. Could you please provide the URL or the location of the IMDb dataset?
 
 </AssistantMessage>
 </Chat>
 
 Early experiments with integrating LLMs into notebooks were very promising. Open source projects have shown the potential of integrating IPython and Jupyter with Large Language Models ([Jupyter AI](https://github.com/jupyterlab/jupyter-ai), [genai](https://github.com/noteable-io/genai)). These projects allow for deeper exception handling, inline assistance, and even code generation. It's fantastic. Due to technical limitations in open source Jupyter though, there's no realtime server side access to the notebook document model.
 
-What we needed was a way for the model to be able to create and edit cells, start new notebooks, and debug its own code. Everything that would be part of the workflow for a data scientist, data engineer, or anyone else looking to learn in a notebook.
+What we needed was a way for the LLM to be able to create and edit cells, start new notebooks, and debug its own code. Everything that would be part of the workflow for a data scientist, data engineer, or anyone else looking to learn in a notebook.
 
 ## Noteable's Headless Execution
 
-Building on top of our foundations for [realtime collaboration and scheduled notebooks](https://github.com/noteable-io/papermill-origami), we began work on a plugin that would allow the model to do just that. It started with creating notebooks
+Building on top of our foundations for [realtime collaboration and scheduled notebooks](https://github.com/noteable-io/papermill-origami), we began work on a plugin that would let the model create and edit cells, start new notebooks, and read outputs. The LLM could participate in the full workflow of data science-everything from data loading to exploration to reporting.
 
-```python cell count=2
-conversation_notebook = await noteable.create_notebook(
-    project_id=default_project,
-    notebook_name="IMDb_ETL.ipynb"
-)
+The reason the model can do this is that we built a realtime API for users to collaborate and for notebooks to run serverside as scheduled jobs. This also means that **AI Agents can join the mix**. Let's look at how this happens from a ChatGPT plugin perspective.
+
+Following along with the IMDb ETL example above, ChatGPT proceeds to make Markdown and Code cells in the notebook it created.
+
+<Chat>
+<AssistantMessage>
+<ChatFunctionCall open>
+
+```javascript chatcall request plugin=Noteable
+// ChatGPT requests to use noteable.create_cell
+{
+  file_id: "f879d549-a4cc-4f5c-bde8-edea8b3950ec",
+  cell_type: "markdown",
+  source: [
+    "# ETL Process for IMDb Dataset\n",
+    "\n",
+    "## Step 1: Extract\n",
+    "\n",
+    "The IMDb datasets are available at 'https://datasets.imdbws.com/'. We will download the required datasets for our analysis.",
+  ],
+}
 ```
 
-and creating cells
-
-```python cell count=3
-source="""# IMDb Dataset ETL
-This notebook will perform the Extract, Transform, Load (ETL) process
-for the IMDb dataset available at https://datasets.imdbws.com/. The
-dataset includes several files, we will focus on the following:
-
-- `title.basics.tsv.gz`: Contains information for titles.
-- `title.ratings.tsv.gz`: Contains the IMDb rating and votes information for titles.
-
-Let's start by downloading the data."""
-
-await noteable.create_cell(
-  file_id=conversation_notebook,
-  cell_type="markdown",
-  source=source
-)
+```json chatcall response plugin=Noteable
+{
+  "cell": {
+    "id": "760dad4d-001f-40b3-9375-165a2f67ee21",
+    "cell_type": "markdown"
+  },
+  "cell_link": "https://app.noteable.io/f/f879d549-a4cc-4f5c-bde8-edea8b3950ec/?cellID=760dad4d-001f-40b3-9375-165a2f67ee21",
+  "cell_state": null,
+  "kernel_state": "idle",
+  "kernel_state_description": "Kernel is ready for input",
+  "assistant_hint": "The cell was created successfully"
+}
 ```
 
-What delighted me the most out of all of this is that ChatGPT knew how to create literate computational notebooks right out of the gate.
+</ChatFunctionCall>
 
-```python cell count=3
-source = """
-!mkdir -p /tmp/imdb_data
-!wget -nc -P /tmp/imdb_data/ https://datasets.imdbws.com/title.basics.tsv.gz
-!wget -nc -P /tmp/imdb_data/ https://datasets.imdbws.com/title.ratings.tsv.gz
-""".strip()
+</AssistantMessage>
 
-cell = await conversation_notebook.create_cell(source)
-outputs = await cell.run()
+</Chat>
+
+The Noteable Plugin tells ChatGPT about the cell ID, a link to the cell, and information about the kernel (runtime) for the notebook. This is important as ChatGPT proceeds to create and run code cells.
+
+<Chat>
+
+<AssistantMessage>
+
+<ChatFunctionCall>
+
+```javascript chatcall request plugin=Noteable
+{
+  "file_id": "f879d549-a4cc-4f5c-bde8-edea8b3950ec",
+  "cell_type": "code",
+  "source": [
+    "!pip install -q wget",
+    "\n",
+    "import wget\n",
+    "\n",
+    "# URLs of the IMDb datasets\n",
+    "urls = [\n",
+    "    'https://datasets.imdbws.com/name.basics.tsv.gz',\n",
+    "    'https://datasets.imdbws.com/title.akas.tsv.gz',\n",
+    "    'https://datasets.imdbws.com/title.basics.tsv.gz',\n",
+    "    'https://datasets.imdbws.com/title.crew.tsv.gz',\n",
+    "    'https://datasets.imdbws.com/title.episode.tsv.gz',\n",
+    "    'https://datasets.imdbws.com/title.principals.tsv.gz',\n",
+    "    'https://datasets.imdbws.com/title.ratings.tsv.gz'\n",
+    "]\n",
+    "\n",
+    "# Download the datasets\n",
+    "for url in urls:\n",
+    "    wget.download(url)"
+  ],
+  "and_run": true
+}
 ```
 
-From here, ChatGPT is able to analyze data and navigate its way through errors. It's ability to debug is incredible. It sometimes gets stuck, but who among us doesn't have that problem?
+```javascript chatcall response plugin=Noteable
+{
+  "cell": {
+    "id": "edf64f21-40a8-4b8a-a39c-845242f66851",
+    "cell_type": "code",
+  },
+  "cell_link": "https://app.noteable.io/f/f879d549-a4cc-4f5c-bde8-edea8b3950ec/?cellID=edf64f21-40a8-4b8a-a39c-845242f66851",
+  "cell_state": "executing",
+  "kernel_state": "busy",
+  "kernel_state_description": "Kernel is processing input",
+  "assistant_hint": "The cell was created successfully\nCell execution taking more than 11 seconds.\nGet the cell for final results, or have the user view their notebook cell at\nhttps://app.noteable.io/f/f879d549-a4cc-4f5c-bde8-edea8b3950ec/?cellID=edf64f21-40a8-4b8a-a39c-845242f66851 to learn more."
+}
+```
+
+</ChatFunctionCall>
+
+I've started the process of downloading the IMDb datasets. This process might take a while due to the large size of the datasets. You can check the progress in your notebook here.
+
+Once the download is complete, we can proceed to the next step of the ETL process, which is data transformation. In this step, we will clean and preprocess the data to make it suitable for analysis.
+
+Do you have any specific transformations or cleaning steps you'd like to apply to the data? For example, removing null values, filtering specific columns, etc.
+
+</AssistantMessage>
+
+<UserMessage avatar="https://github.com/rgbkrk.png">
+
+Go ahead and load the title basics into a dataframe.
+
+</UserMessage>
+
+</Chat>
+
+What's amazing about this is that it can feel like having a partner to work on the notebook with you, directly. Cells live update in your separate window of the notebook open on Noteable.
+
+```python cell count=4
+import pandas as pd
+
+# Load the dataset into a pandas DataFrame
+df = pd.read_csv('title.ratings.tsv', sep='\t')
+```
+
+As soon as you have data loaded, start asking questions and telling ChatGPT to give it a shot.
+
+<Chat>
+
+<UserMessage avatar="https://github.com/rgbkrk.png">
+
+Please visualize the max runtimes per year over the past 20 years.
+
+</UserMessage>
+
+<AssistantMessage>
+
+<ChatFunctionCall>
+
+```json chatcall request plugin=Noteable
+{
+  "file_id": "169e3c44-5b82-4101-9fec-52ca2d84962d",
+  "cell_type": "code",
+  "source": [
+    "import matplotlib.pyplot as plt",
+    "import datetime",
+    "\n",
+    "# Clean the data",
+    "title_basics['startYear'] = pd.to_numeric(title_basics['startYear'], errors='coerce')",
+    "title_basics['runtimeMinutes'] = pd.to_numeric(title_basics['runtimeMinutes'], errors='coerce')",
+    "\n",
+    "# Filter the data for the past 20 years",
+    "current_year = datetime.datetime.now().year",
+    "title_basics_filtered = title_basics[(title_basics['startYear'] >= current_year - 20) & (title_basics['startYear'] <= current_year)]",
+    "\n",
+    "# Group by year and get the max runtime",
+    "max_runtimes = title_basics_filtered.groupby('startYear')['runtimeMinutes'].max()",
+    "\n",
+    "# Plot the data",
+    "plt.figure(figsize=(10, 6))",
+    "plt.plot(max_runtimes.index, max_runtimes.values, marker='o')",
+    "plt.xlabel('Year')",
+    "plt.ylabel('Max Runtime (minutes)')",
+    "plt.title('Max Runtimes per Year Over the Past 20 Years')",
+    "plt.grid(True)",
+    "plt.show()"
+  ],
+  "and_run": true
+}
+```
+
+```json chatcall request plugin=Noteable
+{
+  "cell": {
+    "id": "7daa7f99-097e-48c6-9467-ae79e29a9a7b",
+    "source": "import matplotlib.pyplot as plt\nimport datetime\n\n# Clean the data\ntitle_basics['startYear'] = pd.to_numeric(title_basics['startYear'], errors='coerce')\ntitle_basics['runtimeMinutes'] = pd.to_numeric(title_basics['runtimeMinutes'], errors='coerce')\n\n# Filter the data for the past 20 years\ncurrent_year = datetime.datetime.now().year\ntitle_basics_filtered = title_basics[(title_basics['startYear'] >= current_year - 20) & (title_basics['startYear'] <= current_year)]\n\n# Group by year and get the max runtime\nmax_runtimes = title_basics_filtered.groupby('startYear')['runtimeMinutes'].max()\n\n# Plot the data\nplt.figure(figsize=(10, 6))\nplt.plot(max_runtimes.index, max_runtimes.values, marker='o')\nplt.xlabel('Year')\nplt.ylabel('Max Runtime (minutes)')\nplt.title('Max Runtimes per Year Over the Past 20 Years')\nplt.grid(True)\nplt.show()",
+    "metadata": {
+      "noteable": {
+        "cell_type": "code",
+        "output_collection_id": "183eb3d9-d050-4f20-8b65-d868a66466bb"
+      }
+    },
+    "cell_type": "code",
+    "outputs": [
+      {
+        "type": "display_data",
+        "mimetype": "image/png",
+        "assistant_hint": null,
+        "url": "https://chat.noteable.io/origami/o/97599da17b2b47d0a620945c89fc1bd1.png"
+      }
+    ]
+  },
+  "cell_link": "https://app.noteable.io/f/169e3c44-5b82-4101-9fec-52ca2d84962d/?cellID=7daa7f99-097e-48c6-9467-ae79e29a9a7b",
+  "cell_state": "finished_with_no_error",
+  "kernel_state": "idle",
+  "kernel_state_description": "Kernel is ready for input",
+  "assistant_hint": null
+}
+```
+
+</ChatFunctionCall>
+
+Here is the plot showing the maximum runtimes per year over the past 20 years:
+
+![Max runtimes across all films and TV shows for the last 20 years](./max_runtimes.png)
+
+</AssistantMessage>
+
+</Chat>
+
+It's not perfect by any means! As you can see in the chart above, ChatGPT didn't convert the years to timestamps leading to the x-axis showing `2017.5`. Nothing a little prompting can't fix.
+
+<Chat>
+
+<UserMessage avatar="https://github.com/rgbkrk.png">
+
+On the x-axis, it should read as whole years not "2017.5". Can you also make this a much more beautiful plot? Human readable labels, no grid. Real clean modern infographic.
+
+</UserMessage>
+
+<AssistantMessage>
+
+<ChatFunctionCall>
+
+```json chatcall request plugin=Noteable
+{
+  "file_id": "169e3c44-5b82-4101-9fec-52ca2d84962d",
+  "cell_type": "code",
+  "source": [
+    "import seaborn as sns",
+    "\n",
+    "sns.set_theme(style='whitegrid')",
+    "\n",
+    "# Create a figure and a set of subplots",
+    "fig, ax = plt.subplots(figsize=(10, 6))",
+    "\n",
+    "# Plot the data",
+    "sns.lineplot(x=max_runtimes.index, y=max_runtimes.values, marker='o', ax=ax)",
+    "\n",
+    "# Set xticks as integers (whole years)",
+    "ax.xaxis.set_major_locator(plt.MaxNLocator(integer=True))",
+    "\n",
+    "# Remove the grid",
+    "ax.grid(False)",
+    "\n",
+    "# Set labels and title",
+    "ax.set_xlabel('Year', fontsize=14)",
+    "ax.set_ylabel('Max Runtime (minutes)', fontsize=14)",
+    "ax.set_title('Max Runtimes per Year Over the Past 20 Years', fontsize=16)",
+    "\n",
+    "# Show the plot",
+    "plt.show()"
+  ],
+  "and_run": true
+}
+```
+
+```json chatcall response plugin=Noteable
+{
+  "cell": {
+    "id": "9d16e873-2f43-4d9c-ba95-28131fd05eb2",
+    "source": "import seaborn as sns\n\nsns.set_theme(style='whitegrid')\n\n# Create a figure and a set of subplots\nfig, ax = plt.subplots(figsize=(10, 6))\n\n# Plot the data\nsns.lineplot(x=max_runtimes.index, y=max_runtimes.values, marker='o', ax=ax)\n\n# Set xticks as integers (whole years)\nax.xaxis.set_major_locator(plt.MaxNLocator(integer=True))\n\n# Remove the grid\nax.grid(False)\n\n# Set labels and title\nax.set_xlabel('Year', fontsize=14)\nax.set_ylabel('Max Runtime (minutes)', fontsize=14)\nax.set_title('Max Runtimes per Year Over the Past 20 Years', fontsize=16)\n\n# Show the plot\nplt.show()",
+    "metadata": {
+      "noteable": {
+        "cell_type": "code",
+        "output_collection_id": "e509680d-f48a-4131-97fe-00062385b1df"
+      }
+    },
+    "cell_type": "code",
+    "outputs": [
+      {
+        "type": "display_data",
+        "mimetype": "image/png",
+        "assistant_hint": null,
+        "url": "https://chat.noteable.io/origami/o/984967bccd8b479594f508f6674c2251.png"
+      }
+    ]
+  },
+  "cell_link": "https://app.noteable.io/f/169e3c44-5b82-4101-9fec-52ca2d84962d/?cellID=9d16e873-2f43-4d9c-ba95-28131fd05eb2",
+  "cell_state": "finished_with_no_error",
+  "kernel_state": "idle",
+  "kernel_state_description": "Kernel is ready for input",
+  "assistant_hint": "The cell was created successfully"
+}
+```
+
+</ChatFunctionCall>
+
+Here is the updated plot showing the maximum runtimes per year over the past 20 years. I've made the x-axis labels as whole years and improved the aesthetics of the plot for a cleaner, more modern look:
+
+![Max runtimes across all films and TV shows for the last 20 years](./max_runtimes_cleaner.png)
+
+</AssistantMessage>
+
+</Chat>
+
+One of my favorite approaches from here is to start asking questions of my data. ChatGPT can debug, reason about outputs and exceptions, and generally be a great partner in tandem with the Noteable Plugin.
 
 ## Contrasting with OpenAI's Code Interpreter
 
-There isn't just one way to code. There are also many ways to create data products. The difference between these tools is in the interface and the environment provided. The Large Language Model underneath is roughly the same.
+I value different tools for different jobs. And often, the difference between these tools is not the functionality offered, but the interface and environment provided. In both Noteable and OpenAI's Code Interpreter, the underlying Large Language Model can reason, debug, run code, analyze data, and more.
 
-Some of the exact same reasons you see magic 🪄 when using Noteable is the same reason you see magic 🪄 using OpenAI's Code Interpreter. It can reason, debug, run code, analyze data, etc. What's even better is that Code Interpreter is fast to spin up and work with. They've done great prompting and RLHF behind the scenes to make it a great experience.
+One of the strengths of OpenAI's Code Interpreter is that it's fast to start up. They've used clever prompting and Reinforcement Learning from Human Feedback (RLHF) to create a compelling user experience.
 
-One of OpenAI Code Interpreter's greatest strengths is also a core limitation. The very nature of code interpreter is ephemeral. The greatest thing about ephemeral locked down compute is that you can aggressively cache. I know this from [creating tmpnb back in 2014](https://speakerdeck.com/rgbkrk/tmpnb-at-pytexas?slide=10), which we used to [provide notebooks to readers of an IPython article in the Nature Journal](https://www.nature.com/articles/515151a). That also formed the foundations of JupyterHub's Dockerspawner and greatly [informed how we needed to optimize the Jupyter Notebook](https://lambdaops.com/ops-lessons-and-instant-temporary-ipython-jupyter-notebooks/). If you're using JupyterHub now, you're benefiting from some of the ops lessons learned way back then.
+However, one aspect of the Code Interpreter's design limits its capability: it's ephemeral. This approach allows for aggressive caching, but it also means you lose your work when your session ends.
 
-Not long after we had this deployed for everyone, we started finding out that people wanted to use our temporary notebooks for real analysis work. We fundamentally disrupted the problem of _access_ and people wanted _more_.
+I know this from [creating tmpnb back in 2014](https://speakerdeck.com/rgbkrk/tmpnb-at-pytexas?slide=10), which we used to [provide notebooks to readers of an IPython article in the Nature Journal](https://www.nature.com/articles/515151a). Not long after we had this deployed for everyone, we started finding out that people wanted to use our temporary notebooks for real analysis work. We fundamentally disrupted the problem of _access_ and people wanted _more_.
 
-## Providing Deeper Access with Notebooks
+In case anyone at OpenAI reads this, **thank you so much for the models and the absolutely stunning APIs**. I'm not even getting a chance to gush about Chat Functions yet. Another time.
 
-Eventually, you'll want more levers. I know I do. I need access to data files, environment variables/secrets, and databases. Exposing notebooks through ChatGPT provides a window into this workspace:
+## Providing Durable Access with Notebooks
 
-- The result of computation with the model is stored in a data driven document, a notebook
-- Notebooks are expressive, reproducible communication tools that you can collaborate on with other people
-- A flexible hosted environment expands the possibilities of analysis tasks available
+For some people, that ephemeral nature is perfect. For others, they need a more durable solution—this is where a Notebook Platform like Noteable comes in. I enjoy all the access to my data files, environment variables/secrets, and databases.
 
-As a ChatGPT Plugin, we're limited in the way in which we can expose notebook compute. In order to create a plugin we had to wrap our realtime API with a REST API to allow the GPT models to have access to notebook operations like creating, running, and updating cells. Given that we created our notebook platform for analysis work, we aimed for reproducibility as one of our design constraints. That means that project files for users are mounted with their kernels/notebooks and they have access to their data connections and secrets. Compared to code interpreter, it's not as fast to just have the LLM write code. It gives you persistence though. We also don't control the model or the temperature.
+Notebooks document computations. They're expressive, reproducible communication tools for collaborating with others. The hosted environment expands the possibilities for analysis tasks, and git integration lets our platform participate in robust, durable projects.
 
-Some of the limitations here are much better handled with direct usage of our realtime service along with OpenAI's chat functions, where there's a lot more control and even speed, context, and customization. OpenAI has created really great APIs and standards for working with their Large Language Models, relying on OpenAPI and JSON Schemas extensively. There are three key components of their APIs that I plan to build on top of with notebooks:
+While LLMs are powerful standalone tools, they can be even more powerful when used in robust environments like notebooks. I've always been excited to enable more people to feel the delight of interactive computing. Now it feels like that reach is much more broad and more accessible.
 
-- ChatGPT Plugins
-- Chat Completions API
-- Function Calling
+My goal is to build great environments for collaborative analysis and development. To enable everyone, from small teams to massive scale. We're seeing a glimpse of this now with Noteable and OpenAI's GPT models. I can't wait to see what else we build.
