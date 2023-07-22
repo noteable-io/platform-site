@@ -1,18 +1,18 @@
-import React from "react"
-import clsx from "clsx"
-import styles from "./styles.module.css"
+import React from "react";
+import clsx from "clsx";
+import styles from "./styles.module.css";
 
 type FeatureItem = {
-  title: string
-  img: string
-  description: JSX.Element
-  url: string
-}
+  title: string;
+  img: string;
+  description: JSX.Element;
+  url: string;
+};
 
 const FeatureList: FeatureItem[] = [
   {
     title: "genai",
-    img: "@site/static/img/genai-logo.png",
+    img: "/img/genai-logo.png",
     description: (
       <>
         IPython extension to help you code better with the power of OpenAI's
@@ -23,7 +23,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: "origami",
-    img: "@site/static/img/origami-logo.png",
+    img: "/img/origami-logo.png",
     description: (
       <>Origami is the official Python SDK for talking to Noteable Notebooks.</>
     ),
@@ -31,7 +31,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: "dx",
-    img: "@site/static/img/dx-logo.png",
+    img: "/img/dx-logo.png",
     description: (
       <>
         dx provides convenient formatting and IPython display formatter
@@ -40,7 +40,7 @@ const FeatureList: FeatureItem[] = [
     ),
     url: "https://noteable-io.github.io/dx/",
   },
-]
+];
 
 function Feature({ title, img, description, url }: FeatureItem) {
   return (
@@ -58,7 +58,7 @@ function Feature({ title, img, description, url }: FeatureItem) {
         </a>
       </div>
     </div>
-  )
+  );
 }
 
 export default function HomepageFeatures(): JSX.Element {
@@ -72,5 +72,5 @@ export default function HomepageFeatures(): JSX.Element {
         </div>
       </div>
     </section>
-  )
+  );
 }
