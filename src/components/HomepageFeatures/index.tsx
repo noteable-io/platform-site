@@ -12,7 +12,7 @@ type FeatureItem = {
 const FeatureList: FeatureItem[] = [
   {
     title: "genai",
-    img: "img/genai-logo.png",
+    img: "@site/static/img/genai-logo.png",
     description: (
       <>
         IPython extension to help you code better with the power of OpenAI's
@@ -23,7 +23,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: "origami",
-    img: "img/origami-logo.png",
+    img: "@site/static/img/origami-logo.png",
     description: (
       <>Origami is the official Python SDK for talking to Noteable Notebooks.</>
     ),
@@ -31,7 +31,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: "dx",
-    img: "img/dx-logo.png",
+    img: "@site/static/img/dx-logo.png",
     description: (
       <>
         dx provides convenient formatting and IPython display formatter
