@@ -1,13 +1,13 @@
-import React from "react"
-import clsx from "clsx"
-import styles from "./styles.module.css"
+import React from "react";
+import clsx from "clsx";
+import styles from "./styles.module.css";
 
 type FeatureItem = {
-  title: string
-  img: string
-  description: JSX.Element
-  url: string
-}
+  title: string;
+  img: string;
+  description: JSX.Element;
+  url: string;
+};
 
 const FeatureList: FeatureItem[] = [
   {
@@ -40,7 +40,7 @@ const FeatureList: FeatureItem[] = [
     ),
     url: "https://noteable-io.github.io/dx/",
   },
-]
+];
 
 function Feature({ title, img, description, url }: FeatureItem) {
   return (
@@ -58,7 +58,7 @@ function Feature({ title, img, description, url }: FeatureItem) {
         </a>
       </div>
     </div>
-  )
+  );
 }
 
 export default function HomepageFeatures(): JSX.Element {
@@ -72,5 +72,5 @@ export default function HomepageFeatures(): JSX.Element {
         </div>
       </div>
     </section>
-  )
+  );
 }
