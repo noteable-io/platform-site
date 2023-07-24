@@ -67,27 +67,7 @@ const config = {
         respectPrefersColorScheme: true,
       },
       image: "img/noteable-platform-social-card.png",
-      metadata: [
-        {
-          name: "keywords",
-          content: "jupyter, python, llm, chatgpt, developer, blog",
-        },
-        { name: "twitter:site", content: "@noteable_io" },
-        {
-          name: "twitter:description",
-          content:
-            "Resources for developers working with Noteable notebook and LLM functionality",
-        },
-        {
-          name: "og:description",
-          content:
-            "Resources for developers working with Noteable notebook and LLM functionality",
-        },
-        {
-          name: "og:site_name",
-          content: "Noteable",
-        },
-      ],
+      metadata: [{ name: "twitter:site", content: "@noteable_io" }],
       navbar: {
         title: "Noteable Developer Platform",
         logo: {
