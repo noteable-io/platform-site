@@ -66,8 +66,25 @@ const config = {
       colorMode: {
         respectPrefersColorScheme: true,
       },
-      // Replace with your project's social card
       image: "img/noteable-platform-social-card.png",
+      metadata: [
+        { name: "keywords", content: "cooking, blog" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:site", content: "@noteable_io" },
+        { name: "twitter:title", content: "Noteable Platform" },
+        {
+          name: "twitter:description",
+          content:
+            "Resources for developers working with Noteable notebook and LLM functionality",
+        },
+        { name: "twitter:image", content: "/img/docusaurus-social-card.jpg" },
+        { name: "og:title", content: "Noteable Platform" },
+        {
+          name: "og:description",
+          content:
+            "Resources for developers working with Noteable notebook and LLM functionality",
+        },
+      ],
       navbar: {
         title: "Noteable Developer Platform",
         logo: {
