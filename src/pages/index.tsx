@@ -28,11 +28,11 @@ function HomepageHeader() {
 }
 
 export default function Home(): JSX.Element {
-  const { siteConfig } = useDocusaurusContext();
+  //  const { siteConfig } = useDocusaurusContext();
   return (
     <Layout
-      title={`${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />"
+      title={"Noteable Developer Resources"}
+      description="Resources for developers working on the intersection of Notebooks & LLMs"
     >
       <HomepageHeader />
       <main>
