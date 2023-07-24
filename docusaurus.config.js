@@ -68,7 +68,10 @@ const config = {
       },
       image: "img/noteable-platform-social-card.png",
       metadata: [
-        { name: "keywords", content: "cooking, blog" },
+        {
+          name: "keywords",
+          content: "jupyter, python, llm, chatgpt, developer, blog",
+        },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:site", content: "@noteable_io" },
         { name: "twitter:title", content: "Noteable Platform" },
