@@ -73,17 +73,19 @@ const config = {
           content: "jupyter, python, llm, chatgpt, developer, blog",
         },
         { name: "twitter:site", content: "@noteable_io" },
-        { name: "twitter:title", content: "Noteable Platform" },
         {
           name: "twitter:description",
           content:
             "Resources for developers working with Noteable notebook and LLM functionality",
         },
-        { name: "og:title", content: "Noteable Platform" },
         {
           name: "og:description",
           content:
             "Resources for developers working with Noteable notebook and LLM functionality",
+        },
+        {
+          name: "og:site_name",
+          content: "Noteable",
         },
       ],
       navbar: {
