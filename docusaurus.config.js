@@ -72,7 +72,6 @@ const config = {
           name: "keywords",
           content: "jupyter, python, llm, chatgpt, developer, blog",
         },
-        { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:site", content: "@noteable_io" },
         { name: "twitter:title", content: "Noteable Platform" },
         {
@@ -80,7 +79,6 @@ const config = {
           content:
             "Resources for developers working with Noteable notebook and LLM functionality",
         },
-        { name: "twitter:image", content: "/img/docusaurus-social-card.jpg" },
         { name: "og:title", content: "Noteable Platform" },
         {
           name: "og:description",
