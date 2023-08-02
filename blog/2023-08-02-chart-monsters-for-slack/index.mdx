@@ -1,13 +1,18 @@
 ---
 slug: chart-monsters-for-slack
-title: ""
+title: "Chart Monsters push from Notebooks to Slack"
 authors: [kyle]
-description: "How pairing notebooks with LLMs increases the power of both."
-image: "./llm-notebooks-post.png"
-tags: [chatgpt, ipython, notebooks, noteable, data science]
+description: "Push results from notebooks straight to Slack with Chart Monsters"
+image: "./chart-monsters-social-card.png"
+tags: [notebooks, slack, chart monsters, chartsworth, automation, reporting]
 ---
 
 import { OutputBlock } from "@site/src/components/cell";
+
+import ThemedImage from "@theme/ThemedImage";
+
+import chartsworth_light from "./chartsworth-transparent.png";
+import chartsworth_dark from "./chartsworth-transparent-invert.png";
 
 import {
   Chat,
@@ -15,6 +20,22 @@ import {
   AssistantMessage,
   ChatFunctionCall,
 } from "@site/src/components/chat";
+
+Hi! 👋🏻 This is Chartsworth.
+
+<ThemedImage
+  alt="Chartsworth the chart monster. A rough sketch outline of a floating monster with scruffy fur and adorable eyes amidst axes."
+  sources={{
+    light: chartsworth_light,
+    dark: chartsworth_dark,
+  }}
+  height={300}
+  width={300}
+/>
+
+Chartsworth posts from notebooks to slack.
+
+### Scratch/outline
 
 1. Setting Up a Slack App
 
