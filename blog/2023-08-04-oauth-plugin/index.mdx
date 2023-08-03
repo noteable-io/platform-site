@@ -68,7 +68,7 @@ A compounding problem was that we were enforcing email verification for username
 
 ![Bad Times](./bad_times.svg)
 
-Our solution was to create a second database table we called Principals to represent the login mechanism. A Google, Github, or Auth0 username/password login with the same email all link to the same User account now. We reconfigured our ChatGPT manifest file to proxy the authorize and token endpoints through our plugin so that we could automatically create or link Noteable accounts during the OAuth flow. And we moved the email verification onto our own system instead of within an Auth0 rule, with error handling in the plugin to tell the user that while they did successfully install the Noteable ChatGPT plugin, they still need to click the email verification link before it will successfully create Notebooks or run code for them.
+Our solution was to create a second database table we called Principals to represent the login mechanism. A Google, Github, or Auth0 username/password login with the same email all link to the same User account now. We reconfigured our ChatGPT manifest file to proxy the authorize and token endpoints through our plugin so that we could automatically create or link Noteable accounts during the OAuth flow. We moved the email verification onto our own system instead of within an Auth0 rule, with error handling in the plugin to tell the user that while they did successfully install the Noteable ChatGPT plugin, they still need to click the email verification link before it will successfully create Notebooks or run code for them.
 
 ![Good Times](./good_times.svg)
 
