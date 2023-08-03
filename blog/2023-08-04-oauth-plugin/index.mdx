@@ -43,7 +43,7 @@ The Noteable ChatGPT plugin is more or less a proxy to our main API. There's a l
 
 ## OAuth configuration
 
-Once you're ready to test out OAuth with your plugin, the first step is to have your plugin hosted somewhere besides `localhost` and for your manifest file (`ai-plugin.json`) to have its auth section set to type oauth. You'll also need to have the client_url and authorization_url point to the endpoints of your OAuth provider for the initial redirect and POST to grab the jwt respectively.
+Once you're ready to test out OAuth with your plugin, the first step is to have your plugin hosted somewhere besides `localhost` and for your manifest file (`ai-plugin.json`) to have its auth section set to type oauth. You'll also need to have the `client_url` and `authorization_url` point to the endpoints of your OAuth provider for the initial redirect and POST to grab the jwt respectively.
 
 When you click "develop your own plugin" in ChatGPT and give it the domain your plugin is hosted at, it will try to download the manifest file and OpenAPI spec file. If it sees your manifest file has type oauth, it will prompt you to enter the client_id and client_secret from your OAuth provider. After you've put those in, ChatGPT will give you a token that you need to add to your manifest file and then redeploy / restart. If ChatGPT can pull the manifest file and see the new token, then the "develop your own plugin" flow is complete and ChatGPT will give you a plugin application id that you can use to update the redirect_uri in your OAuth provider.
 
