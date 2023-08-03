@@ -1,14 +1,14 @@
 ---
-slug: notebook-tools-for-llms
+slug: oauth-for-chatgpt-plugins
 title: "OAuth for ChatGPT Plugins"
 authors: [kafonek]
 description: "How Noteable added OAuth to its ChatGPT Plugin"
-draft: true
 # image: "./TODO.png"
 tags: [chatgpt, plugins, chatgpt plugins, oauth, security, architecture]
 ---
 
 ## Introduction
+
 OAuth is mechanism used enable single sign on across applications. When you install the Noteable ChatGPT plugin, you can choose to login or sign up (it's free!) to Noteable using an existing Google or Github account among others. In this post, the Noteable engineering team wants to share some of the low-level details of how OAuth works, and how it's implemented in Noteable. We hope this helps other plugin developers and the community at large.
 
 Let’s start with why a plugin would use OAuth, compared to “no auth” or “service level auth”. Simply put, if your plugin or downstream API needs to know about a logged in user, use OAuth. For instance, if you were writing a wikipedia-reading plugin you could skip OAuth because you don’t need to have a logged in user to read Wiki. If the large language model (LLM) is creating Notebooks and running code via Noteable plugin, which goes through role-based access control (RBAC) permission checks and user-context-aware features, we need to know what user account the request is for.
@@ -50,10 +50,11 @@ When you click "develop your own plugin" in ChatGPT and give it the domain your 
 ![OAuth config](./oauth_config.svg)
 
 :::note
-Scope is optional, and is an empty string in the OpenAI example. Noteable uses scopes `openid profile email offline_access` in order get back three tokens during the OAuth process: `access_token`, `id_token`, and `refresh_token` (all are JWTs). 
- - ChatGPT uses the `access_token` in Authorization headers to our plugin
- - ChatGPT will automatically refresh `access_token` using the `refresh_token`
- - Noteable uses the name and email from the `id_token` payload to create a User account in Noteable if one does not already exist
+Scope is optional, and is an empty string in the OpenAI example. Noteable uses scopes `openid profile email offline_access` in order get back three tokens during the OAuth process: `access_token`, `id_token`, and `refresh_token` (all are JWTs).
+
+- ChatGPT uses the `access_token` in Authorization headers to our plugin
+- ChatGPT will automatically refresh `access_token` using the `refresh_token`
+- Noteable uses the name and email from the `id_token` payload to create a User account in Noteable if one does not already exist
 
 You can read more about scopes [here](https://auth0.com/docs/get-started/apis/scopes/openid-connect-scopes)
 
@@ -80,5 +81,3 @@ We mentioned at the top of the post that you cannot do OAuth testing in localhos
 ![Localhost Development](./localhost_dev.svg)
 
 ## Final Thoughts
-
-
