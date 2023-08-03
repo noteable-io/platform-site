@@ -8,37 +8,77 @@ draft: true
 tags: [chatgpt, plugins, chatgpt plugins, oauth, security, architecture]
 ---
 
-Hello plugin community. I work on the backend engineering team at Noteable, which includes development of the Noteable ChatGPT plugin. Today I wanted to share a bit of a guide to OAuth for plugin developers based on documentation and retrospectives I’ve written for our internal consumption. Feel free to re-use and re-purpose the images and text below for your own projects if it helps. I’m happy to answer questions in the comments or direct messages.
+## Introduction
+OAuth is mechanism used enable single sign on across applications. When you install the Noteable ChatGPT plugin, you can choose to login or sign up (it's free!) to Noteable using an existing Google or Github account among others. In this post, the Noteable engineering team wants to share some of the low-level details of how OAuth works, and how it's implemented in Noteable. We hope this helps other plugin developers and the community at large.
 
-I’m going to start out at a very high level and then work down into some more complicated use cases using our own system as an example. There are many different OAuth providers out there, and you can always roll your own. We happen to use Auth0, so that’s what my diagrams are geared towards. My words here should complement official OpenAI tutorials and Auth0 docs::
+Let’s start with why a plugin would use OAuth, compared to “no auth” or “service level auth”. Simply put, if your plugin or downstream API needs to know about a logged in user, use OAuth. For instance, if you were writing a wikipedia-reading plugin you could skip OAuth because you don’t need to have a logged in user to read Wiki. If the large language model (LLM) is creating Notebooks and running code via Noteable plugin, which goes through role-based access control (RBAC) permission checks and user-context-aware features, we need to know what user account the request is for.
+
+There are many OAuth providers out there, and there's nothing stopping you from writing your own. We happen to use [Auth0](https://auth0.com/), so our examples will include their implementation details (such as `authorize` and `/oauth/token` endpoints). OpenAI and Auth0 both have good documentation about OAuth flows, I recommend reading these sections in addition to this blog post if you're working on an OAuth plugin yourself.
 
 - https://platform.openai.com/docs/plugins/authentication/oauth
 - https://auth0.com/docs/authenticate/protocols/oauth#authorization-endpoint
 
-Let’s start with why a plugin would use OAuth, compared to “no auth” or “service level auth”. Simply put, if your plugin or downstream API needs to know about a logged in user, use OAuth. For instance, if you were writing a wikipedia-reading plugin you could skip Oauth because you don’t need to have a logged in user to read Wiki. If the LLM is creating Notebooks and running code via Noteable plugin, which is chock full of RBAC and user-context-aware features, we need to know what user account the request is for.
+## OAuth 101
 
-As a plugin developer, getting started with OAuth can be a bit tricky. You can’t test with localhost plugin development workflow. If you try to “develop your own plugin” and point to localhost, and your manifest file has anything other than “none” in the auth section, you’ll get a message saying “Only auth type `none` is supported for localhost plugins”.
+When you click `Install` on an OAuth-enabled ChatGPT plugin, your browser will be redirected to the OAuth provider page. Once you've completed logging in there, which may entail even more OAuth redirect jumps, the provider will redirect you back to ChatGPT. If everything goes well, ChatGPT will acquire a JSON web token (JWT) that it will include in an Authorization header on every HTTP request to your plugin.
 
-One option is to use a tool like ngrok to proxy requests to your localhost, just make sure you adjust the allowed redirect domains in your OAuth provider every time you spin up a new proxy. Luckily for me, Noteable has several integration and staging domains I can test with.
+A JWT contains limited identity information about the authenticated user, and has an expiration. You can learn more about JWT's and decode the payloads in a JWT at [jwt.io](https://jwt.io/).
 
-Next, what does it look like to users of your plugin? When they install your plugin, they’ll be redirected to your OAuth provider to login. When that’s complete, the user can activate your plugin for new chats and the LLM will include a JWT in an Authorization: bearer header for all HTTP requests to your plugin. If you look at your browser network tab, you can see part of the flow but not all of it.
+![OAuth 101](./oauth_101.svg)
 
-Your plugin can then do two things with the JWT: validate that it’s signed by the OAuth provider and decode it to get a payload of information about the user. https://jwt.io is a great resource for seeing what a generic JWT looks like and decoding (but not validating) JWTs in testing and debugging. OAuth providers will typically publish their public signing keys at a /.well-known/jwks.json endpoint.
+:::note
+When you are developing a plugin in localhost mode, the only authorization type allowed is "none". You cannot test OAuth flows in localhost development mode. You will need to host your plugin somewhere or use a tool like [ngrok](https://ngrok.com/) to create a proxy to your machine.
 
-I’ll pause for a moment to talk about the values you configure in ChatGPT when clicking “develop your own plugin” and what goes in the manifest file. If you’re using auth0, the client_url in the manifest file should be the /authorize endpoint and the authorization_url is the /oauth/token endpoint for your tenant. The redirect_uri is controlled by ChatGPT and will be built using your plugin id, make sure to configure your OAuth provider to allow that redirect path.
+:::
 
-If you’ve worked with OAuth in typical frontend/backend applications before, then it can help to think about ChatGPT and the plugin as effectively just another frontend to your API. The Noteable plugin as an example is mostly a passthrough to a subset of the overall Noteable API, with some shortened endpoints and an OpenAPI schema tailored for the LLM.
+## OAuth apps
 
-One nice perk of auth0 is that you can configure different “Applications” (the auth0 term, not the generic sense of the word) in the same tenant. Those can display different landing pages for users that are coming into your login/signup flow from a normal frontend vs ChatGPT. As well, you may want to customize which logins are allowed. As a practical example, we had to disable username/password signup from ChatGPT since we enforce email verification for that flow in Auth0, but the “you must verify your email” detail that Auth0 sent back to ChatGPT isn’t displayed to the user.
+OAuth and JWT's are not unique to ChatGPT plugins. A typical front-end / back-end web application would use an OAuth flow very similar to the ChatGPT plugin experience. On the backend, you can validate that the JWT's you're receiving were issued by the OAuth provider you trust by using JSON Web Keys (JWK). At Noteable we use the [jwcrypto](https://jwcrypto.readthedocs.io/en/latest/) Python library.
 
-If you store User information in your own database, then the backend auth validation process is probably a two-step thing. First, validate the JWT and decode the claims, then look-up User row from information in the claims (sub/iss for auth0). One tip I’d offer to developers is think about whether you want one User account per email or one User account per auth mechanism, and separate out your Users and Principals tables appropriately.
+![OAuth app](./oauth_app.svg)
 
-We definitely experienced some pain when users ended up logged into the Noteable UI app as one account (user/pass auth mechanism) and the ChatGPT plugin as a different account (say, google oauth social login) and then ran into weird permission errors trying to work with Projects or Notebooks owned by different accounts. We tried to lean on auth0’s built-in account linking but we’re working instead right now restructuring our database and sign-up flow so it is one account per email instead of auth mechanism.
+The Noteable ChatGPT plugin is more or less a proxy to our main API. There's a little more going on in our application, but a plugin that is effectively a pass-through to another API can pass the JWT it got from ChatGPT right along as an Authorization header to the real API.
 
-The final big unaddressed topic in that last diagram is account creation on the backend. It’s fine that ChatGPT or your frontend UI can redirect a new user to auth0 so they create an account in auth0, but how do you make sure there’s a matching account in your database?
+![Plugin and Frontend](./oauth_combined_app.svg)
 
-There’s two parts to that answer. First, you want to use the right OpenID connect scopes (https://auth0.com/docs/get-started/apis/scopes/openid-connect-scopes) so that Auth0 returns an id_token in addition to an access_token from the POST to the token_url. You may as well ask for a refresh_token while you’re at it. The scopes we put in our manifest file are “offline_access openid email profile”.
+## OAuth configuration
 
-Second, you need to receive the id_token somehow. The way we implemented that is to have ChatGPT POST to our plugin instead of directly to auth0 /oauth/token endpoint. Here’s the last diagram of this post.
+Once you're ready to test out OAuth with your plugin, the first step is to have your plugin hosted somewhere besides `localhost` and for your manifest file (`ai-plugin.json`) to have its auth section set to type oauth. You'll also need to have the client_url and authorization_url point to the endpoints of your OAuth provider for the initial redirect and POST to grab the jwt respectively.
 
-Thanks, I hope this helps.
+When you click "develop your own plugin" in ChatGPT and give it the domain your plugin is hosted at, it will try to download the manifest file and OpenAPI spec file. If it sees your manifest file has type oauth, it will prompt you to enter the client_id and client_secret from your OAuth provider. After you've put those in, ChatGPT will give you a token that you need to add to your manifest file and then redeploy / restart. If ChatGPT can pull the manifest file and see the new token, then the "develop your own plugin" flow is complete and ChatGPT will give you a plugin application id that you can use to update the redirect_uri in your OAuth provider.
+
+![OAuth config](./oauth_config.svg)
+
+:::note
+Scope is optional, and is an empty string in the OpenAI example. Noteable uses scopes `openid profile email offline_access` in order get back three tokens during the OAuth process: `access_token`, `id_token`, and `refresh_token` (all are JWTs). 
+ - ChatGPT uses the `access_token` in Authorization headers to our plugin
+ - ChatGPT will automatically refresh `access_token` using the `refresh_token`
+ - Noteable uses the name and email from the `id_token` payload to create a User account in Noteable if one does not already exist
+
+You can read more about scopes [here](https://auth0.com/docs/get-started/apis/scopes/openid-connect-scopes)
+
+:::
+
+## Painful Lessons
+
+One decision we made early on at Noteable that turned out to be a mistake was creating User accounts using the `sub` payload from the Auth0 identity tokens, and looking up a User row in our database from the `sub` in the Auth0 access token. Each login mechanism ended up being its own separate User in our system. If you logged in to [app.noteable.io](https://app.noteable.io) using your Github social login, then installed the ChatGPT plugin and authenticated with your Google login, you would end up with all sorts of permission denied errors trying to work on Notebooks between them. It was a major pain point.
+
+A compounding problem was that we were enforcing email verification for username / password accounts using a rule in Auth0 that would not return a JWT until the user clicked a link in their email. In our Noteable app frontend, when you signed up that way we could direct the user what to do. However we had no control over the ChatGPT UI, and from the user perspective they would install the Noteable plugin and it would fail with no error message. Technically there was an error code in url arguments of the redirect from Auth0 back to ChatGPT, but it would take an eagle-eyed user to notice that. Our temporary solution was to disable username / password login from the Auth0 application we used for ChatGPT, funneling even more users into the multiple-account problem space.
+
+![Bad Times](./bad_times.svg)
+
+Our solution was to create a second database table we called Principals to represent the login mechanism, and link to the Users table. We reconfigured our ChatGPT manifest file to proxy the authorize and token endpoints through our plugin so that we could automatically create or link Noteable accounts during the OAuth flow. And we moved the email verification onto our own system instead of within an Auth0 rule, with error handling in the plugin to tell the user that while they did successfully install the Noteable ChatGPT plugin, they still need to click the email verification link before it will successfully create Notebooks or run code for them.
+
+![Good Times](./good_times.svg)
+
+![Account Creation](./account_creation.svg)
+
+## Localhost development
+
+We mentioned at the top of the post that you cannot do OAuth testing in localhost development. If your backend API requires a JWT for authentication though, what do you do? Luckily at Noteable we issue our own tokens for programmatic access to our API, which we'll talk more about in other blog posts and show off in Origami documentation.
+
+![Localhost Development](./localhost_dev.svg)
+
+## Final Thoughts
+
+
