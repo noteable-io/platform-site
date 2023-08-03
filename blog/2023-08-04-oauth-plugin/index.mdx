@@ -9,7 +9,7 @@ tags: [chatgpt, plugins, chatgpt plugins, oauth, security, architecture]
 
 ## Introduction
 
-OAuth is a mechanism used to enable Single Sign-On (SSO) across applications. When you install the Noteable ChatGPT plugin, you can choose to login or sign up (it's free!) to Noteable using an existing Google or Github account among others. In this post, the Noteable engineering team wants to share some of the low-level details of how OAuth works, and how it's implemented in Noteable. We hope this helps other plugin developers and the community at large.
+OAuth is a mechanism used to enable Single Sign-On (SSO) across applications. When you install the Noteable ChatGPT plugin, you can choose to login or sign up (it's free!) to Noteable using an existing Google, Github, or LinkedIn account. In this post, the Noteable engineering team wants to share some of the low-level details of how OAuth works, and how it's implemented in Noteable. We hope this helps other plugin developers and the community at large.
 
 Let’s start with why a plugin would use OAuth, compared to “no auth” or “service level auth”. Simply put, if your plugin or downstream API needs to know about a logged in user, use OAuth. For instance, if you were writing a wikipedia-reading plugin you could skip OAuth because you don’t need to have a logged in user to read Wiki. If the large language model (LLM) is creating Notebooks and running code via Noteable plugin, which goes through role-based access control (RBAC) permission checks and user-context-aware features, we need to know what user account the request is for.
 
