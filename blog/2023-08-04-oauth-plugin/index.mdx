@@ -33,7 +33,7 @@ When you are developing a plugin in localhost mode, the only authorization type 
 
 ## OAuth apps
 
-OAuth and JWT's are not unique to ChatGPT plugins. A typical front-end / back-end web application would use an OAuth flow very similar to the ChatGPT plugin experience. On the backend, you can validate that the JWT's you're receiving were issued by the OAuth provider you trust by using JSON Web Keys (JWK). At Noteable we use the [jwcrypto](https://jwcrypto.readthedocs.io/en/latest/) Python library.
+OAuth and JWT's are not unique to ChatGPT plugins. A typical front-end / back-end web application would use an OAuth flow very similar to the ChatGPT plugin experience. On the backend, you can validate that the JWT's you're receiving were issued by the OAuth provider you trust by using JSON Web Keys (JWK). At Noteable we use the [`jwcrypto`](https://jwcrypto.readthedocs.io/en/latest/) Python library.
 
 ![OAuth app](./oauth_app.svg)
 
