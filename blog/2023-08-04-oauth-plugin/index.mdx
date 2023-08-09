@@ -2,7 +2,7 @@
 slug: oauth-for-chatgpt-plugins
 title: "OAuth for ChatGPT Plugins"
 authors: [kafonek]
-description: "How Noteable added OAuth to its ChatGPT Plugin"
+description: "How Noteable added OAuth to its ChatGPT Plugin. By now, everyone has played with a large language model like ChatGPT, at least a user. You've probably gone through those cycles of copying and pasting your email drafts, code snippets, or posts. There's a lot of power in giving large language models more context. The biggest way to do this is to provide access to documents directly. As a developer, you can enable this experience by writing a ChatGPT Plugin that uses OAuth."
 image: "./oauth-plugin-social-card.png"
 tags: [chatgpt, plugins, chatgpt plugins, oauth, security, architecture]
 ---
@@ -10,6 +10,16 @@ tags: [chatgpt, plugins, chatgpt plugins, oauth, security, architecture]
 ## Introduction
 
 By now, everyone has played with a large language model like ChatGPT, at least a user. You've probably gone through those cycles of copying and pasting your email drafts, code snippets, or posts. There's a lot of power in giving large language models more context. The biggest way to do this is to provide access to documents directly. As a developer, you can enable this experience by writing a ChatGPT Plugin that uses OAuth.
+
+:::tip
+
+[OpenAI's own plugin docs](https://platform.openai.com/docs/plugins/review) include two use cases that either require OAuth or are greatly augmented by it.
+
+1. Retrieval over **user-specific** or otherwise hard-to-search knowledge sources
+
+2. Plugins that give the model **computational** abilities
+
+:::
 
 OAuth is a mechanism used to enable Single Sign-On (SSO) across applications. When you install the Noteable ChatGPT plugin, you can choose to login or sign up (it's free!) to Noteable using an existing Google, Github, or LinkedIn account. In this post, the Noteable engineering team wants to share some of the low-level details of how OAuth works, and how it's implemented in Noteable. We hope this helps other plugin developers and the community at large.
 
@@ -53,7 +63,7 @@ When you click "develop your own plugin" in ChatGPT and give it the domain your 
 
 ![Develop your own Plugin step 2](./develop_plugin2.png)
 
-After you've put those in, ChatGPT will give you a token that you need to add to your manifest file and then redeploy / restart. 
+After you've put those in, ChatGPT will give you a token that you need to add to your manifest file and then redeploy / restart.
 
 ![Develop your own Plugin step 3](./develop_plugin3.png)
 
@@ -93,3 +103,7 @@ We mentioned at the top of the post that you cannot do OAuth testing in localhos
 ![Localhost Development](./localhost_dev.svg)
 
 ## Final Thoughts
+
+Integrating OAuth with ChatGPT plugins opens up a world of personalized possibilities, linking the reasoning capabilities of Large Language Models with personalized content. If you're a developer inspired by the idea of creating powerful, user-centric plugins, now's the time to get started. Dive into plugins, explore [OpenAI's documentation on plugins](https://platform.openai.com/docs/plugins/introduction), and make the most of OAuth to unlock the potential of personalized interaction. Join us on this journey and let's redefine what plugins can do!
+
+<!-- Want to build a your plugin to the next level? Check out our developer resources and join the Noteable community today. Together, we'll build the future of interactive computing. -->
