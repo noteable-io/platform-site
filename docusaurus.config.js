@@ -4,6 +4,14 @@
 const lightCodeTheme = require("prism-react-renderer/themes/github");
 const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 
+// process.env.VERCEL_URL
+
+let siteURL = "https://platform.noteable.io";
+
+if (process.env.VERCEL_URL) {
+  siteURL = `https://${process.env.VERCEL_URL}`;
+}
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: "Noteable Platform",
@@ -11,7 +19,7 @@ const config = {
   favicon: "img/favicon.ico",
 
   // Set the production url of your site here
-  url: "https://platform.noteable.io",
+  url: siteURL,
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: "/",
