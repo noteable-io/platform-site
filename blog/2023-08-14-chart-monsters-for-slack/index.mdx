@@ -21,7 +21,15 @@ import {
   ChatFunctionCall,
 } from "@site/src/components/chat";
 
+import SlackMessage from "@site/src/components/SlackMessage";
+
 Hi! 👋🏻 This is Chartsworth.
+
+```python cell count=1
+from chartsworth import Chartsworth
+
+chartsworth = Chartsworth()
+```
 
 <ThemedImage
   alt="Chartsworth the chart monster. A rough sketch outline of a floating monster with scruffy fur and adorable eyes amidst axes."
@@ -34,6 +42,28 @@ Hi! 👋🏻 This is Chartsworth.
 />
 
 Chartsworth posts from notebooks to slack.
+
+```python cell count=2
+day = "Monday"
+emoji = "tada"
+signups = 8127
+
+message = f"""
+Happy {day}! It's time for our daily update. :{emoji}:
+
+\# of :new: signups so far this month: *{signups}*
+""".strip()
+
+chartsworth.post(message)
+```
+
+<SlackMessage avatarUrl={chartsworth_light} name="Chartsworth" timestamp="10:04 AM">
+
+Happy Saturday! It's time for our daily update. :tada:
+
+\# of :new: signups so far this month: **7281**
+
+</SlackMessage>
 
 ### Scratch/outline
 
@@ -59,3 +89,7 @@ Chartsworth posts from notebooks to slack.
 5. Conclusion and Next Steps
 
 - A summary of what the reader has learned and encouragement to explore further or adapt the process to their specific needs.
+
+### Parking Lot
+
+- Opinion on doing threads as a default philosophy

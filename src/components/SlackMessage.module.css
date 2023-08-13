@@ -1,0 +1,57 @@
+.messageContainer {
+  background-color: white;
+  display: flex;
+  padding: 10px;
+  position: relative;
+  font-family: Slack-Lato, Slack-Fractions, Lato, appleLogo, sans-serif;
+  font-variant-ligatures: common-ligatures;
+  font-weight: 400;
+}
+
+.avatar img {
+  padding-top: 6px;
+  max-width: fit-content;
+  width: 36px;
+  border-radius: 4px; /* Updated border-radius */
+}
+
+.messageContent {
+  margin-left: 10px;
+}
+
+.sender {
+  font-weight: bold;
+  color: #333;
+}
+
+.senderButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+  font: inherit;
+  padding: 0;
+  outline: none;
+  text-align: left;
+}
+
+.marginLeft {
+  margin-left: 0.25rem;
+}
+
+.appBadge {
+  background-color: #e0e0e0;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.timestamp {
+  color: #999;
+  margin-left: 10px;
+}
+
+.messageText {
+  color: #333;
+  line-height: 1.4;
+}
