@@ -1,8 +1,11 @@
 import React, { ReactNode } from "react";
 import styles from "./SlackMessage.module.css";
 
+import ThemedImage from "@theme/ThemedImage";
+
 interface SlackMessageProps {
   avatarUrl: string;
+  avatarUrlDark?: string;
   name: string;
   timestamp: string;
   children: ReactNode;
@@ -10,13 +13,20 @@ interface SlackMessageProps {
 
 const SlackMessage: React.FC<SlackMessageProps> = ({
   avatarUrl,
+  avatarUrlDark,
   name,
   timestamp,
   children,
 }) => (
   <div className={styles.messageContainer}>
     <div className={styles.avatar}>
-      <img src={avatarUrl} alt={`${name}'s avatar`} />
+      <ThemedImage
+        alt={`${name}'s avatar`}
+        sources={{
+          light: avatarUrl,
+          dark: avatarUrlDark || avatarUrl,
+        }}
+      />
     </div>
     <div className={styles.messageContent}>
       <span className={styles.sender}>

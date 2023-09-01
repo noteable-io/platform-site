@@ -31,6 +31,8 @@ from chartsworth import Chartsworth
 chartsworth = Chartsworth()
 ```
 
+<OutputBlock count={1}>
+
 <ThemedImage
   alt="Chartsworth the chart monster. A rough sketch outline of a floating monster with scruffy fur and adorable eyes amidst axes."
   sources={{
@@ -41,7 +43,11 @@ chartsworth = Chartsworth()
   width={300}
 />
 
-Chartsworth posts from notebooks to slack.
+</OutputBlock>
+
+## Chartsworth
+
+Chartsworth posts from **notebooks** to **slack**.
 
 ```python cell count=2
 day = "Monday"
@@ -57,13 +63,21 @@ Happy {day}! It's time for our daily update. :{emoji}:
 chartsworth.post(message)
 ```
 
-<SlackMessage avatarUrl={chartsworth_light} name="Chartsworth" timestamp="10:04 AM">
+<SlackMessage avatarUrl={chartsworth_light} avatarUrlDark={chartsworth_dark} name="Chartsworth" timestamp="10:04 AM">
 
 Happy Saturday! It's time for our daily update. :tada:
 
-\# of :new: signups so far this month: **7281**
+\# of :new: signups so far this month: **8127**
 
 </SlackMessage>
+
+:::note
+
+This post will cover how to write your own version of Chartsworth, and how to use it to post from Notebooks to Slack.
+
+You can also `pip install chartsworth` and use it as-is.
+
+:::
 
 ### Scratch/outline
 
