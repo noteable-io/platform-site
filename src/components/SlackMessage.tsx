@@ -11,6 +11,21 @@ interface SlackMessageProps {
   children: ReactNode;
 }
 
+export const ReplyBar = ({ text }) => {
+  return (
+    <div className={styles.threadSeparatorRowGeneric}>
+      <div className={styles.threadsFlexpaneSeparator}>
+        <span className={styles.threadsFlexpaneSeparatorCount}>{text}</span>
+        <hr className={styles.threadsFlexpaneSeparatorLine} />
+      </div>
+    </div>
+  );
+};
+
+export const SlackThread = ({ children }) => {
+  return <div className={styles.threadContainer}>{children}</div>;
+};
+
 const SlackMessage: React.FC<SlackMessageProps> = ({
   avatarUrl,
   avatarUrlDark,

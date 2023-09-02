@@ -9,11 +9,8 @@
   font-weight: 400;
 
   border-radius: 4px;
-  margin-bottom: 20px;
-
   /* border: 0.5px solid; */
   /* box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04); */
-  box-shadow: var(--ifm-global-shadow-lw);
 }
 
 .avatar img {
@@ -62,4 +59,39 @@
 .messageText {
   color: var(--ifm-heading-color);
   line-height: 1.4;
+}
+
+/* SlackMessage.module.css */
+.threadSeparatorRowGeneric .threadsFlexpaneSeparatorLine {
+  border-top-color: var(--ifm-color-emphasis-600);
+  flex: 1;
+  margin: 1px 0 0;
+}
+
+hr {
+  border: none;
+  border-top: var(--ifm-color-emphasis-600);
+  margin-bottom: 16px;
+}
+
+.threadSeparatorRowGeneric {
+  color: var(--ifm-color-emphasis-600);
+}
+
+.threadsFlexpaneSeparator {
+  display: flex;
+  align-items: center;
+}
+
+.threadsFlexpaneSeparatorCount {
+  margin-right: 10px;
+}
+
+.threadContainer {
+  padding: 1em;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+  border-radius: 4px;
+  border: 0.1px solid;
+  border-color: var(--ifm-color-emphasis-200);
+  margin-bottom: 1em;
 }
