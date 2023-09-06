@@ -1,0 +1,97 @@
+.messageContainer {
+  background-color: var(--ifm-background-color);
+  color: var(--ifm-font-color-base);
+  display: flex;
+  padding: 10px;
+  position: relative;
+  font-family: Slack-Lato, Slack-Fractions, Lato, appleLogo, sans-serif;
+  font-variant-ligatures: common-ligatures;
+  font-weight: 400;
+
+  border-radius: 4px;
+  /* border: 0.5px solid; */
+  /* box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04); */
+}
+
+.avatar img {
+  padding-top: 6px;
+  max-width: fit-content;
+  width: 36px;
+  border-radius: 4px; /* Updated border-radius */
+}
+
+.messageContent {
+  margin-left: 10px;
+}
+
+.sender {
+  font-weight: bold;
+  color: var(--ifm-color-emphasis-900);
+}
+
+.senderButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ifm-color-emphasis-900);
+  font: inherit;
+  padding: 0;
+  outline: none;
+  text-align: left;
+}
+
+.marginLeft {
+  margin-left: 0.25rem;
+}
+
+.appBadge {
+  background-color: var(--ifm-color-emphasis-200);
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.timestamp {
+  color: var(--ifm-heading-color);
+  margin-left: 10px;
+}
+
+.messageText {
+  color: var(--ifm-heading-color);
+  line-height: 1.4;
+}
+
+/* SlackMessage.module.css */
+.threadSeparatorRowGeneric .threadsFlexpaneSeparatorLine {
+  border-top-color: var(--ifm-color-emphasis-400);
+  flex: 1;
+  margin: 1px 0 0;
+}
+
+hr {
+  border: none;
+  border-top: var(--ifm-color-emphasis-400);
+  margin-bottom: 16px;
+}
+
+.threadSeparatorRowGeneric {
+  color: var(--ifm-color-emphasis-400);
+}
+
+.threadsFlexpaneSeparator {
+  display: flex;
+  align-items: center;
+}
+
+.threadsFlexpaneSeparatorCount {
+  margin-right: 10px;
+}
+
+.threadContainer {
+  padding: 1em;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+  border-radius: 4px;
+  border: 0.1px solid;
+  border-color: var(--ifm-color-emphasis-400);
+  margin-bottom: 1em;
+}
