@@ -26,15 +26,17 @@ import SlackMessage, {
   SlackThread,
 } from "@site/src/components/SlackMessage";
 
-Sometimes it's hard to get people to read your notebook reports no matter how many times you post them. To solve this, we can push reports _directly_ to your colleagues in slack under the veneer of an adorable chart monster.
+Sometimes it's hard to get people to read your notebook reports no matter how many times you post them. To solve this, let's push reports _directly_ to your colleagues in slack under the veneer of an adorable chart monster.
+
+```python cell count=0
+!pip install chartsworth -q
+```
 
 ## Introducing Chartsworth
 
 Hi! 👋🏻 This is Chartsworth.
 
 ```python cell count=1
-!pip install chartsworth -q
-
 from chartsworth import Chartsworth
 
 chartsworth = Chartsworth()
@@ -113,18 +115,64 @@ I'm going to post a plot now!
 
 <SlackMessage avatarUrl={chartsworth_light} avatarUrlDark={chartsworth_dark} name="Chartsworth" timestamp="10:04 AM">
 
-<span style={{ color: "var(--ifm-color-emphasis-500)" }}>
-  monster-plot.png ▾
-</span>
-<img src={require("./monster-plot.png").default} />
+<div style={{ display: "flex", flexDirection: "column" }}>
+  <span style={{ color: "var(--ifm-color-emphasis-500)" }}>
+    monster-plot.png ▾
+  </span>
+  <img src={require("./monster-plot.png").default} />
+</div>
 
 </SlackMessage>
 
 </SlackThread>
 
-You can use Chartsworth to post plots and texts from your reports for colleagues to see. Set up a Slack App (detailed below) and install `chartsworth` to start posting!
+With this in place, you can start to build your own chart monsters to post from your notebooks.
+[Set up a Slack App](#set-them-up-as-a-slack-app) and install `chartsworth` to start posting!
 
-Once you have chartsworth setup in your notebook, schedule it!
+## Scheduling
+
+The most interesting and useful way to use a chart monster is to schedule their work. Integrate them into your data workflows to get insight into your data pipelines, reports, or even just a daily affirmation.
+
+<div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: "20px",
+  }}
+>
+  <div
+    style={{ padding: "10px", border: "1px solid #eee", marginRight: "20px" }}
+  >
+    ETL
+  </div>
+  <div
+    style={{
+      width: "0",
+      height: "0",
+      borderTop: "10px solid transparent",
+      borderBottom: "10px solid transparent",
+      borderLeft: "10px solid #eee",
+      marginRight: "20px",
+    }}
+  ></div>
+  <div
+    style={{ padding: "10px", border: "1px solid #eee", marginRight: "20px" }}
+  >
+    Derived Data
+  </div>
+  <div
+    style={{
+      width: "0",
+      height: "0",
+      borderTop: "10px solid transparent",
+      borderBottom: "10px solid transparent",
+      borderLeft: "10px solid #eee",
+      marginRight: "20px",
+    }}
+  ></div>
+  <div style={{ padding: "10px", border: "1px solid #eee" }}>Reporting</div>
+</div>
 
 <p>
   {`Within Noteable, save a named version. On the righthand sidebar click the `}
@@ -141,12 +189,26 @@ Once you have chartsworth setup in your notebook, schedule it!
       fill-rule="evenodd"
     ></path>
   </svg>
-  {` icon.`}
+  {` icon. After that, you can schedule the notebook to run regularly.`}
 </p>
 
-![](./schedule.png)
+<ThemedImage
+  alt="Chartsworth the chart monster. A rough sketch outline of a floating monster with scruffy fur and adorable eyes amidst axes."
+  sources={{
+    light: require("./schedule.png").default,
+    dark: require("./schedule.png").default,
+  }}
+  style={{
+    display: "block",
+    marginLeft: "auto",
+    marginRight: "auto",
+    marginBottom: "20px",
+  }}
+/>
 
-### Creating your first chart monster
+This will free you up from "running a daily report" by hand yourself and let you focus on the more interesting parts of your work.
+
+## Creating your first chart monster
 
 :::note
 
@@ -156,7 +218,7 @@ You can also `pip install chartsworth` and use all the baked in opinions.
 
 :::
 
-### Set them up as a Slack App
+### Set a Chart Monster up as a Slack App
 
 The first step is to create a Slack app. This is a fairly straightforward process, but it does require a few steps.
 
@@ -212,7 +274,7 @@ To make your chart monster, I recommend the following prompts for Midjourney, DA
 
 ![](./rgbkrk_a_white_monster_sits_amidst_matplotlib_axes_in_the_style_ff398b0b-b1e7-41a0-a124-05f6c2a2ab66.png)
 
-## How Chartsworth Posts
+## 🛠️ How Chartsworth Posts
 
 Slack makes it really easy to post directly using the `slack_sdk`. Above I used the opinionated version of this workflow using `chartsworth`. Let's unpack how do this with the `slack_sdk` directly.
 
@@ -335,17 +397,17 @@ Happy Saturday! It's time for our daily update. :tada:
 
 <SlackMessage avatarUrl={chartsworth_light} avatarUrlDark={chartsworth_dark} name="Chartsworth" timestamp="10:04 AM">
 
-<span style={{ color: "var(--ifm-color-emphasis-500)" }}>
-  monster-plot.png ▾
-</span>
-<img src={require("./monster-plot.png").default} />
+<div style={{ display: "flex", flexDirection: "column" }}>
+  <span style={{ color: "var(--ifm-color-emphasis-500)" }}>
+    monster-plot.png ▾
+  </span>
+  <img src={require("./monster-plot.png").default} />
+</div>
 
 </SlackMessage>
 
 </SlackThread>
 
-<SlackMessage avatarUrl={chartsworth_light} avatarUrlDark={chartsworth_dark} name="Chartsworth" timestamp="10:04 AM">
+## Why Chart Monsters?
 
-I am ready to _plot_
-
-</SlackMessage>
+Chartsworth is not just another tool; it's a way to think about how we communicate data and results. It's a way to make data more accessible and more fun. You can still provide the link to your notebook so people can see the source. Giving people an at-a-glance where they're already at will encourage people to engage with your work more.
