@@ -28,10 +28,6 @@ import SlackMessage, {
 
 Sometimes it's hard to get people to read your notebook reports no matter how well you design your dashboard. To solve this, let's push reports _directly_ to your colleagues on Slack under the veneer of an adorable chart monster.
 
-```python cell count=0
-!pip install chartsworth -q
-```
-
 ## 👋🏻 Introducing Chartsworth
 
 ```python cell count=1
@@ -56,6 +52,17 @@ chartsworth = Chartsworth()
 />
 
 <br />
+
+:::info
+
+[Chartsworth is an open source monster](https://github.com/noteable-io/chartsworth) you can install right from [PyPI](https://pypi.org/project/chartsworth/).
+
+```
+pip install chartsworth
+```
+
+:::
+
 <br />
 
 Chartsworth posts from **notebooks** to **slack**. This little metric monster lets you post plots, images, and anything else the slack sdk will let you post.
