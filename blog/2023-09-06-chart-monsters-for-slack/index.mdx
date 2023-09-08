@@ -28,10 +28,6 @@ import SlackMessage, {
 
 Sometimes it's hard to get people to read your notebook reports no matter how well you design your dashboard. To solve this, let's push reports _directly_ to your colleagues on Slack under the veneer of an adorable chart monster.
 
-```python cell count=0
-!pip install chartsworth -q
-```
-
 ## 👋🏻 Introducing Chartsworth
 
 ```python cell count=1
@@ -56,6 +52,17 @@ chartsworth = Chartsworth()
 />
 
 <br />
+
+:::info
+
+[Chartsworth is an open source monster](https://github.com/noteable-io/chartsworth) you can install right from [PyPI](https://pypi.org/project/chartsworth/).
+
+```
+pip install chartsworth
+```
+
+:::
+
 <br />
 
 Chartsworth posts from **notebooks** to **slack**. This little metric monster lets you post plots, images, and anything else the slack sdk will let you post.
@@ -133,7 +140,7 @@ With this in place, you can start to build your own chart monsters to post from 
 
 ## 📆 Scheduling
 
-The most interesting and useful way to use a chart monster is to schedule their work. Integrate them into your data workflows to get insight into your data pipelines, reports, or even just a daily affirmation.
+The most interesting and useful way to use a chart monster is to schedule your work. Integrate them into your data workflows to get insight into your data pipelines, reports, or even just a daily affirmation.
 
 <div
   style={{
@@ -200,7 +207,7 @@ The most interesting and useful way to use a chart monster is to schedule their 
 
 </div>
 
-This will free you up from "running a daily report" by hand yourself and let you focus on the more interesting parts of your work.
+This will free you up from "running a daily report" by hand and let you focus on the more interesting parts of your work.
 
 ## 🎂 Creating your first chart monster
 
@@ -208,7 +215,7 @@ This will free you up from "running a daily report" by hand yourself and let you
 
 This section will cover how to write your own version of Chartsworth, and how to use it to post from Notebooks to Slack.
 
-You can also `pip install chartsworth` and use all the baked in opinions.
+You can also `pip install chartsworth` to use all the baked in opinions, like threads :thread: and immediate gratification.
 
 :::
 
@@ -293,11 +300,11 @@ message_response = slack_client.chat_postMessage(
 )
 ```
 
-Assuming _you too_ have a `#chartsworth-dev` channel, there should now be a post.
+Assuming you've invited your `@Chartsworth` to a `#chartsworth-dev` channel, there should now be a post.
 
 ### Threading
 
-The most useful field from the `message_response` is the timestamp, which you can use to thread replies.
+The most useful field from the `message_response` is the `ts` field. This is the timestamp of the message chartsworth just posted.
 
 ```python cell count=5
 message_response["ts"]
