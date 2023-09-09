@@ -1,0 +1,89 @@
+---
+slug: dataframes-answers-for-solutions
+title: "Dataframes: Answers in Service to a Solution"
+authors: [elijah]
+description: "Dataframes are key to the popularity and power of notebooks but not for the reasons you think"
+image: "./dataframes-social-card.png"
+tags: [notebooks, dataframes, tables, data, visualization]
+---
+
+import { OutputBlock } from "@site/src/components/cell";
+
+import ThemedImage from "@theme/ThemedImage";
+
+import dataframe_splash from "./dataframe-splash.png";
+
+import {
+  Chat,
+  UserMessage,
+  AssistantMessage,
+  ChatFunctionCall,
+} from "@site/src/components/chat";
+
+import SlackMessage, {
+  ReplyBar,
+  SlackThread,
+} from "@site/src/components/SlackMessage";
+
+<ThemedImage
+  alt="Let's get me a fun dataframe thing done in Midjourney."
+  sources={{
+    light: dataframe_splash,
+    dark: dataframe_splash,
+  }}
+  height={300}
+  width={300}
+  style={{
+    display: "block",
+    marginLeft: "auto",
+    marginRight: "auto",
+  }}
+/>
+
+<br />
+
+Whether you work with notebooks or not, you work with data. And when you work with data, it typically comes in the form of tables. Rows and columns of numbers and text are a powerful way of modeling data–so powerful that examples date back to the Middle Kingdom of Egypt, with a carving at the temple of Karnak displaying what looks like a spreadsheet.​​ In notebooks, tables of data most often take the form of dataframes, which may seem simple and almost invisible but by better understanding what a dataframe is and what it enables, we can better understand how to empower data-driven workflows not only on notebooks but via LLMs and BI tools.
+
+[The Spreadsheet of Karnak at Luxor](./spreadsheet_of_karnak.jpeg)
+The Spreadsheet of Karnak at Luxor
+attribution: https://commons.wikimedia.org/wiki/User:Ovedc
+
+## A Brief History of the Dataframe
+
+The dataframe, as we understand it today, is a foundational element in the area of data science, analytics, and engineering. Its inception can be traced back to R, and earlier data structures like it existed in SAS and SPSS. R was designed primarily for statistical computing and graphics, so it was natural that it would implement features like this to support analysis and representation of table data.
+
+In R, the dataframe was conceived as a list of vectors of equal length. This design allowed for the storage of data in a tabular format, where each column could be of a different type (numeric, character, factor, etc.), and each row represented an observation. This structure allowed for complex data manipulations and statistical analyses to be performed seamlessly.
+
+It was soon adopted by Python via the Pandas library. Pandas was designed to provide data structures that make data analysis in Python faster and more intuitive. Before Pandas arrived on the scene, NumPy was the primary option for numerical data analysis in Python, but it lacked the flexibility to easily handle heterogeneous data types or labeled data in a tabular format. While NumPy was, and still is, excellent for numerical computations and mathematical operations, its focus on homogenous data made it less ideal for tasks that required dealing with real-world, messy data. That's where Pandas filled the gap, offering data structures specifically engineered for data manipulation and analysis, which could deal with a wide array of data types.
+
+The name "Pandas" is a portmanteau of "Panel Data". In econometrics and multidimensional data analysis, panels refers to datasets that involve observations over multiple time periods. Imagine a traditional 2D table, but with each cell having the capability to expand into another dimension, creating a cube of data. Originally, Pandas was designed to handle this kind of 3D data, sort of a cubic table, but dropped support for panels because their usage was limited and what utility users saw in them was handled with multi-index dataframes.
+
+## How Dataframes Show You Data
+
+The rise of Jupyter Notebooks was powered in no small part by the power Pandas brought to tabular data handling. For data scientists, simply viewing the first few rows of a table is often the step in even the most sophisticated approaches.
+
+Dataframes are more than just tables. They’re a collection of columnar functions, metadata and instructions for rendering deeply integrated with the approach to data analysis enshrined in notebooks.
+
+Those columnar functions include things like filtering the data to look at subsets, group/aggregation functions that transform the data into summaries, sorting the data for more efficient analysis, deriving new columns based on calculations of existing columns and sampling that data. But they also cover what we might think of as descriptive statistics, allowing you to `describe` a table or summarize individual columns.
+
+That’s just looking at dataframes as a class in a library. They’re more than that–they’re a first-class citizen of a notebook. Support for Dataframes within applications like Jupyter Notebooks naturally led to more robust output processing and handling. Instantiate a dataframe in a notebook and you don’t just get access to those columnar and table-level functions, you also get a visual display of the dataframe in the notebook as part of the cell output. That’s not a feature of the dataframe but rather a feature of the notebook seeing what a dataframe represents.
+
+That output is traditionally a simple HTML table, but with the implementation of the application/vnd.dataresource+json output type, notebooks could expand on what the default visual representation of a dataframe could be. That’s what enabled the open-source Data Explorer, which allowed notebooks to render data in an interactive and exploratory manner more rich than a static html table. It only took five millenia but we’ve finally improved upon display of tables beyond what was seen in Ancient Egypt.
+
+We expanded on Data Explorer with Noteable’s DEX, a fully-functional BI experience in the notebook. Like all visualization tools, DEX takes tabular data and transforms it just-in-time into other forms of data to produce hierarchical charts, geospatial data visualization, network viz and other representations that are not strictly tabular.
+
+## The Secret Power of Dataframes
+
+All that functionality describes but it isn’t sufficient to explain why dataframes proved so popular. Dataframes provide an immediate answer to that critical question “What does my data look like?” More importantly, they provide an answer in service to a solution. When you’re working with data you need answers, even when they’re not great. Take any world-class algorithm that’s a part of your life and if you go back to the beginning of its life you’ll find a data scientist looking at an HTML table of data. The top 10 rows of a dataframe, though simple and naive, give analysts, engineers and scientists the raw material to pose questions for analysis and modeling.
+
+Even though ten rows of data is not a great representation of the data, seeing it enables you to ask the next question, get the next not great answer, and work toward a solution. LLM interfaces like ChatGPT have reminded us that people are comfortable with not great and even ephemeral answers when they are in service to a solution. Any user of ChatGPT can point to a pile of mixed up, hallucinated and simplistic answers that helped them work toward their solution.
+
+That’s why we integrated a data visualization prototyping environment called Data Prism into DEX. Data Prism uses a heuristic approach to suggest multiple chart views into the tabular data in the dataframe. They’re like faceting the data but the facets are different views instead of just different metrics or dimensions. These might not be great views into the data but they serve as jumping-off points for better understanding the shape of the data in the same way that the html table view helps analysts and scientists think about their data.
+
+We’ll never get away from tables because tables are the fundamental currency of communicating data. Even when you’re working with exotic data structures (hierarchical data, networks, vectors) eventually they become tables due to the accessibility of that representation. And it’s not just native python table data, it takes little effort to envision CSVs as dataframes, Tables as dataframes, Spreadsheets as dataframes (especially now that Excel has integrated python) and SQL databases as dataframes.
+
+## Answers in Service to a Solution
+
+The only way someone comes up with a solution is if you first give them answers. We might think when we see the final results of EDA or data science that it was _the_ answer but it was just the last answer at the end of a string of answers. Answers are both ends and means. Answers, like table views and automatic visualization and LLM chat responses, benefit from immediacy to enable greater analytical sophistication.
+
+The resulting call-response structure, whether in a notebook or an LLM chat is a visible workflow that we know further enables literate programming. That workflow is reproducible, branchable and by its very nature a narrative. Dataframes work because they’re all about answers in service to a solution. It’s almost like they know that they’re part of that workflow. They are an integral part of developing data driven decisions beyond their ability to process tabular data. And the better we can get about providing answers, even not great answers, to data-driven workers, the better we’ll be about enabling that workflow.
