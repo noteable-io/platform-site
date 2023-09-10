@@ -68,9 +68,19 @@ Those columnar functions include things like filtering the data to look at subse
 
 That’s just looking at dataframes as a class in a library. They’re more than that–they’re a first-class citizen of a notebook. Support for Dataframes within applications like Jupyter Notebooks naturally led to more robust output processing and handling. Instantiate a dataframe in a notebook and you don’t just get access to those columnar and table-level functions, you also get a visual display of the dataframe in the notebook as part of the cell output. That’s not a feature of the dataframe but rather a feature of the notebook seeing what a dataframe represents.
 
+<img src="./html_table" />
+The simple HTML table that notebooks typically output when a dataframe is created
+
 That output is traditionally a simple HTML table, but with the implementation of the application/vnd.dataresource+json output type, notebooks could expand on what the default visual representation of a dataframe could be. That’s what enabled the open-source Data Explorer, which allowed notebooks to render data in an interactive and exploratory manner more rich than a static html table. It only took five millenia but we’ve finally improved upon display of tables beyond what was seen in Ancient Egypt.
 
+<img src="./nteract_data_explorer" />
+The nteract Data Explorer that provides an interactive view into data when a dataframe
+is created
+
 We expanded on Data Explorer with Noteable’s DEX, a fully-functional BI experience in the notebook. Like all visualization tools, DEX takes tabular data and transforms it just-in-time into other forms of data to produce hierarchical charts, geospatial data visualization, network viz and other representations that are not strictly tabular.
+
+<iframe src="https://app.noteable.io/public-output-collection/96349cca-dbf2-4d61-b6b4-9626878c7fae" frameborder=0 width="100%" height="500px"></iframe>
+The same happiness data represented using DEX's Data Prism
 
 ## The Secret Power of Dataframes
 
