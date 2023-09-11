@@ -147,7 +147,7 @@ const config = {
                 href: "https://noteable.io",
               },
               {
-                label: "Blog",
+                label: "Product Blog",
                 to: "https://noteable.io/blog",
               },
               {
