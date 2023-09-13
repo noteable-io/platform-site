@@ -40,10 +40,13 @@ import SlackMessage, {
     marginRight: "auto",
   }}
 />
+<center>
+  <small>The 5000-year evolution in the display of tabular data</small>
+</center>
 
 <br />
 
-Whether you work with notebooks or not, you work with data. And when you work with data, it typically comes in the form of tables. Rows and columns of numbers and text are a powerful way of modeling data–so powerful that examples date back to the Middle Kingdom of Egypt, with a carving at the temple of Karnak displaying what looks like a spreadsheet.​​ In notebooks, tables of data most often take the form of dataframes, which may seem simple and almost invisible but by better understanding what a dataframe is and what it enables, we can better understand how to empower data-driven workflows not only on notebooks but via LLMs and BI tools.
+Whether you work with notebooks or not, you work with data. And when you work with data, it typically comes in the form of tables. Rows and columns of numbers and text are a powerful way of modeling data–so powerful that examples date back to the Middle Kingdom of Egypt, with a carving at the temple of Karnak displaying what looks like a spreadsheet.​​ In notebooks, tables of data most often take the form of Pandas dataframes. They may seem simple and almost invisible but by better understanding what a dataframe is and what it enables, we can better understand how to empower data-driven workflows not only on notebooks but via LLMs and BI tools.
 
 <img
   src={spreadsheet_of_karnak}
@@ -76,8 +79,13 @@ The simple HTML table that notebooks typically output when a dataframe is create
 That output is traditionally a simple HTML table, but with the implementation of the application/vnd.dataresource+json output type, notebooks could expand on what the default visual representation of a dataframe could be. That’s what enabled the open-source Data Explorer, which allowed notebooks to render data in an interactive and exploratory manner more rich than a static html table. It only took five millenia but we’ve finally improved upon display of tables beyond what was seen in Ancient Egypt.
 
 <img src={nteract_data_explorer} />
-The nteract Data Explorer that provides an interactive view into data when a dataframe
-is created
+<center>
+  <small>
+    The nteract Data Explorer that provides an interactive view into data when a
+    dataframe is created
+  </small>
+</center>
+<br />
 
 We expanded on Data Explorer with Noteable’s DEX, a fully-functional BI experience in the notebook. Like all visualization tools, DEX takes tabular data and transforms it just-in-time into other forms of data to produce hierarchical charts, geospatial data visualization, network viz and other representations that are not strictly tabular.
 
@@ -87,7 +95,13 @@ We expanded on Data Explorer with Noteable’s DEX, a fully-functional BI experi
   width="100%"
   height="500px"
 ></iframe>
-The same happiness data represented using DEX's Data Prism
+<center>
+  <small>
+    The same happiness data represented using DEX's Data Prism shared as an
+    iframe output from a Noteable Notebook
+  </small>
+</center>
+<br />
 
 ## The Secret Power of Dataframes
 
