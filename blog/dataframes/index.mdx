@@ -77,7 +77,12 @@ Those columnar functions include things like filtering the data to look at subse
 That’s just looking at dataframes as a class in a library. They’re more than that–they’re a first-class citizen of a notebook. Support for Dataframes within applications like Jupyter Notebooks naturally led to more robust output processing and handling. Instantiate a dataframe in a notebook and you don’t just get access to those columnar and table-level functions, you also get a visual display of the dataframe in the notebook as part of the cell output. That’s not a feature of the dataframe but rather a feature of the notebook seeing what a dataframe represents.
 
 <img src={html_table} />
-The simple HTML table that notebooks typically output when a dataframe is created
+<center>
+  <small>
+    The simple HTML table that notebooks typically output when a dataframe is
+    created
+  </small>
+</center>
 
 That output is traditionally a simple HTML table, but with the implementation of the application/vnd.dataresource+json output type, notebooks could expand on what the default visual representation of a dataframe could be. That’s what enabled the open-source Data Explorer, which allowed notebooks to render data in an interactive and exploratory manner more rich than a static html table. It only took five millenia but we’ve finally improved upon display of tables beyond what was seen in Ancient Egypt.
 
