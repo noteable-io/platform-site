@@ -48,6 +48,8 @@ import SlackMessage, {
 
 Whether you work with notebooks or not, you work with data. And when you work with data, it typically comes in the form of tables. Rows and columns of numbers and text are a powerful way of modeling data–so powerful that examples date back to the Middle Kingdom of Egypt, with a carving at the temple of Karnak displaying what looks like a spreadsheet.​​ In notebooks, tables of data most often take the form of Pandas dataframes. They may seem simple and almost invisible but by better understanding what a dataframe is and what it enables, we can better understand how to empower data-driven workflows not only on notebooks but via LLMs and BI tools.
 
+{" "}
+
 <img
   src={spreadsheet_of_karnak}
   title="The Spreadsheet of Karnak at Luxor from https://commons.wikimedia.org/wiki/User:Ovedc"
@@ -82,13 +84,15 @@ dataframe = pandas.read_csv("happiness.csv")
 dataframe
 ```
 
-<div
-  style={{
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.2)",
-  }}
->
-  <img src={html_table} />
-</div>
+<OutputBlock count={1}>
+  <div
+    style={{
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.2)",
+    }}
+  >
+    <img src={html_table} />
+  </div>
+</OutputBlock>
 <center>
   <small>
     The simple HTML table that notebooks typically output when a dataframe is
@@ -104,13 +108,15 @@ dataframe = pandas.read_csv("happiness.csv")
 dataframe
 ```
 
-<div
-  style={{
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.2)",
-  }}
->
-  <img src={nteract_data_explorer} />
-</div>
+<OutputBlock count={1}>
+  <div
+    style={{
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.2)",
+    }}
+  >
+    <img src={nteract_data_explorer} />
+  </div>
+</OutputBlock>
 <center>
   <small>
     The nteract Data Explorer that provides an interactive view into data when a
@@ -127,18 +133,20 @@ dataframe = pandas.read_csv("happiness.csv")
 dataframe
 ```
 
-<div
-  style={{
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.2)",
-  }}
->
-  <iframe
-    src="https://app.noteable.io/public-output-collection/96349cca-dbf2-4d61-b6b4-9626878c7fae"
-    frameborder={0}
-    width="100%"
-    height="500px"
-  ></iframe>
-</div>
+<OutputBlock count={1}>
+  <div
+    style={{
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.2)",
+    }}
+  >
+    <iframe
+      src="https://app.noteable.io/public-output-collection/96349cca-dbf2-4d61-b6b4-9626878c7fae"
+      frameborder={0}
+      width="100%"
+      height="500px"
+    ></iframe>
+  </div>
+</OutputBlock>
 <center>
   <small>
     The same happiness data represented using DEX's Data Prism shared as an
