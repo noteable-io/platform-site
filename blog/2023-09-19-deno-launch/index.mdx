@@ -1,0 +1,52 @@
+---
+slug: experimenting-with-deno-notebooks
+title: "Experiments with Deno Notebooks"
+authors: [kyle]
+description: ""
+image: ""
+tags: [notebooks, deno, typescript, kernels, visualization, jupyter, community]
+---
+
+For so long, I have wanted an incredible environment to do interactive and literate computing with server side JavaScript. Some of the main requirements I've had are:
+
+- Ease of package management
+- Native support for TypeScript
+- Commitment to web standards
+
+Deno has all of these.
+
+In addition, Deno has a strong and kind development community and ecosystem. It is a joy to work with them.
+
+Now, I'm excited to officially announce support for Deno Notebooks on Noteable.
+
+:::info
+
+The Deno kernel is experimental 🧪. As with any data science work though, it's worth experimenting!
+
+If you find bugs, report them either to [us]() or to [Deno](https://github.com/denoland/deno/issues).
+
+:::
+
+## Getting Started
+
+You have two ways to launch a Deno kernel from Noteable:
+
+- On any notebook, click to change the Notebook Settings from the lefthand sidebar. Then, select Deno from the dropdown menu.
+- Using the Noteable Plugin on ChatGPT, ask it to start a Deno notebook. You might have to hint to it to check on what kernels are available.
+
+From here, you can write JavaScript. You can write TypeScript too. It's a REPL though so you can make typing mistakes. Get messy!
+
+```typescript cell count={1}
+console.log("Hello from Deno ", Deno.version.deno);
+```
+
+```cell output count={1}
+Hello from Deno 1.37.0
+```
+
+## Where do we go from here?
+
+I'm committed to making the data science ecosystem in Deno as strong as possible. I'm excited to see what we can build together.
+
+- Arrow
+- Polars
