@@ -1,0 +1,194 @@
+---
+slug: experimenting-with-deno-notebooks
+title: "Experiments with Deno Notebooks"
+authors: [kyle]
+description: "Time to experiment with Deno Notebooks -- the literate computing experience for JavaScript."
+image: "./deno-social-card.png"
+tags:
+  [
+    notebooks,
+    deno,
+    typescript,
+    javascript,
+    kernels,
+    visualization,
+    jupyter,
+    community,
+  ]
+---
+
+import { OutputBlock } from "@site/src/components/cell";
+
+<center>
+  <img src={require("./denolangs.png").default} width="50%" />
+</center>
+
+For so long, I have wanted an incredible environment to do interactive and literate computing with server side JavaScript. Some of the main requirements I've had are:
+
+- Top level async await
+- Ease of package management
+- Native support for TypeScript
+- Commitment to web standards
+- Strong community and ecosystem
+
+**Deno has all of these.**
+
+I was so delighted to find out that Deno developers had [already been working on a Jupyter kernel for Deno](https://github.com/denoland/deno/issues/13016). The V8 Inspector protocol was already in place as was all the REPL machinery. Discussions were already had about interfaces for exposing rich outputs (HTML, Markdown, Images, etc.). It was a perfect time to get involved. Not knowing Rust yet knowing Jupyter, I was happy to collaborate. I'm so grateful for the Deno team for their tenacity, support, and guidance. They turned this around so quickly.
+
+Bringing interactive literate computing to Deno has been an incredible joy. We want to make it available to as many people as possible. Today, [Deno shipped 1.37](https://deno.com/blog/v1.37) with the Jupyter kernel. It's ready for you to experiment with.
+
+Now, I'm excited to announce that **Deno Notebooks are now available on Noteable**.
+
+:::info
+
+The Deno kernel is experimental 🧪. As with any data science work, it's worth experimenting!
+
+If you find bugs, report them either to [Noteable](https://community.noteable.io/c/need-help) or to [Deno](https://github.com/denoland/deno/issues).
+
+:::
+
+## Getting Started
+
+You have two ways to launch a Deno kernel from Noteable:
+
+- On any notebook, click to change the Notebook Settings from the lefthand sidebar. Then, select Deno from the dropdown menu.
+- Using the Noteable Plugin on ChatGPT, ask it to start a Deno notebook. You might have to hint to it to check on what kernels are available.
+
+Once ready, you can write JavaScript. You can write TypeScript too. It's a REPL though so you can make typing mistakes. Get messy!
+
+```typescript cell count=1
+console.log("Hello from Deno", Deno.version.deno);
+```
+
+```cell output count=1
+Hello from Deno 1.37.0
+```
+
+### Importing Packages
+
+To get started, we'll import some `deno` packages using ECMAScript modules (ESM). Deno's main way to import packages is through URLs.
+
+```typescript cell count=2
+import { display } from "https://deno.land/x/display@v0.0.6/mod.ts";
+import { createCanvas } from "https://deno.land/x/skia_canvas@0.5.4/mod.ts";
+```
+
+Here we've imported `display` which allows us to display rich outputs like images, markdown, and more in the notebook. We've also imported `skia_canvas` which is a native binding that gives us access to the Canvas API.
+
+Let's draw some pastel colored rectangles.
+
+```typescript cell count=3
+// Initialize canvas and context
+const canvas = createCanvas(180, 180);
+const ctx = canvas.getContext("2d");
+
+// Define a pastel color palette
+const pastelColors = ["#FFB6C1", "#FFD700", "#98FB98", "#ADD8E6"];
+
+// Draw rectangles
+for (let i = 0; i < pastelColors.length; i++) {
+  ctx.fillStyle = pastelColors[i];
+  ctx.fillRect(10 + i * 40, 10 + i * 40, 30, 30);
+}
+
+// Display the canvas
+display(canvas);
+```
+
+<OutputBlock count={3}>
+
+![Pastel Colored Rectangles](./pastel-squares.png)
+
+</OutputBlock>
+
+### `npm` package support
+
+Beyond ESM, we can also tap into the `npm` ecosystem using `npm:package_name` imports.
+
+```typescript cell count=4
+// Import RxJS from npm
+import { range } from "npm:rxjs";
+import { filter, map } from "npm:rxjs/operators";
+
+_ = range(1, 10)
+  .pipe(
+    filter((value) => value % 2 !== 0),
+    map((value) => value ** 2)
+  )
+  .subscribe(console.log);
+```
+
+```output cell count=4
+1
+9
+25
+49
+81
+```
+
+## Bringing IPython Rich Objects to Deno
+
+In IPython, we have access to classes like `IPython.display.Markdown` and `IPython.display.HTML`.
+
+```python
+from IPython.display import Markdown
+import IPython
+import sys
+
+display(Markdown(f"""# Notebooks in Python via IPython ![IPython logo](https://github.com/ipython.png?size=32)
+
+* Python {sys.version.split()[0]}
+* IPython {IPython.__version__}
+
+Interactive compute with Jupyter _built into IPython_!
+"""))
+```
+
+In JavaScript though, we have tagged template literals to simplify how we would make the same calls:
+
+```plain cell count=5
+import { md } from "https://deno.land/x/display/mod.ts"
+
+md`# TypeScript Notebooks!
+
+![Deno logo](https://github.com/denoland.png?size=32)
+
+- TypeScript ${Deno.version.typescript}
+- V8 ${Deno.version.v8}
+- Deno ${Deno.version.deno}
+
+Interactive compute with Jupyter _built into Deno_!
+`;
+```
+
+<OutputBlock count={5}>
+
+# TypeScript Notebooks!
+
+![Deno logo](https://github.com/denoland.png?size=32)
+
+- TypeScript 5.2.2
+- V8 11.8.172.3
+- Deno 1.37.0
+
+Interactive compute with Jupyter _built into Deno_!
+
+</OutputBlock>
+
+This opens up whole new possibilities for generating reports from the comforts of JavaScript. Also available are `html` and `svg` tagged template literals.
+
+```typescript cell count=6
+import { html } from "https://deno.land/x/display/mod.ts";
+
+html`<b>Whoa</b>`;
+```
+
+<OutputBlock count={6}>
+  <b>Whoa</b>
+</OutputBlock>
+
+## Where do we go from here?
+
+There is plenty more to do within the kernel. Follow along at the [Deno repo](https://github.com/denoland/deno) and [let me know](https://twitter.com/KyleRayKelley) what else you'd like to see. There's a whole world of possibilities.
+
+One area I'm particularly keen on is having excellent support for DataFrames in Deno. I'm excited to see what we can do with Arrow and Polars. That's for another post though. Until then, happy experimenting!
