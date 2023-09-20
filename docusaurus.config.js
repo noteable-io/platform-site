@@ -113,25 +113,46 @@ const config = {
             title: "Community",
             items: [
               {
+                label: "Noteable Community",
+                href: "https://community.noteable.io",
+              },
+              {
                 label: "Twitter",
                 href: "https://twitter.com/noteable_io",
               },
             ],
           },
           {
-            title: "More",
+            title: "Platform",
             items: [
               {
-                label: "App",
+                label: "Noteable App",
                 href: "https://app.noteable.io",
               },
               {
-                label: "Blog",
+                label: "Developer Blog",
                 to: "/blog",
               },
               {
                 label: "GitHub",
                 href: "https://github.com/noteable-io",
+              },
+            ],
+          },
+          {
+            title: "Noteable",
+            items: [
+              {
+                label: "Home",
+                href: "https://noteable.io",
+              },
+              {
+                label: "Product Blog",
+                to: "https://noteable.io/blog",
+              },
+              {
+                label: "Pricing",
+                href: "https://noteable.io/pricing",
               },
             ],
           },
