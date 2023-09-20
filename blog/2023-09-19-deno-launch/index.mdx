@@ -33,13 +33,15 @@ For so long, I have wanted an incredible environment to do interactive and liter
 
 **Deno has all of these.**
 
-I was so delighted to find out that Deno developers had already been working on a Jupyter kernel for Deno. The V8 Inspector protocol was already in place as was the REPL. Discussions were already had about interfaces for rich outputs (HTML, Markdown, Images). It was a perfect time to get involved. Not knowing Rust yet knowing Jupyter, I was happy to collaborate. I'm so grateful for the Deno team for their tenacity, support, and guidance.
+I was so delighted to find out that Deno developers had [already been working on a Jupyter kernel for Deno](https://github.com/denoland/deno/issues/13016). The V8 Inspector protocol was already in place as was all the REPL machinery. Discussions were already had about interfaces for exposing rich outputs (HTML, Markdown, Images, etc.). It was a perfect time to get involved. Not knowing Rust yet knowing Jupyter, I was happy to collaborate. I'm so grateful for the Deno team for their tenacity, support, and guidance. They turned this around so quickly.
 
-It's a lot of fun getting this kernel to work. Since there are so many people that can make use of this, I wanted to make it available to as many people as possible. I'm excited to announce that **Deno Notebooks are now available on Noteable**.
+Bringing interactive literate computing to Deno has been an incredible joy. We want to make it available to as many people as possible. Today, [Deno shipped 1.37](https://deno.com/blog/v1.37) with the Jupyter kernel. It's ready for you to experiment with.
+
+Now, I'm excited to announce that **Deno Notebooks are now available on Noteable**.
 
 :::info
 
-The Deno kernel is experimental 🧪. As with any data science work though, it's worth experimenting!
+The Deno kernel is experimental 🧪. As with any data science work, it's worth experimenting!
 
 If you find bugs, report them either to [Noteable](https://community.noteable.io/c/need-help) or to [Deno](https://github.com/denoland/deno/issues).
 
@@ -187,6 +189,6 @@ html`<b>Whoa</b>`;
 
 ## Where do we go from here?
 
-There is plenty more to do within the kernel. Follow along at the Deno repo and let me know what else you'd like to see.
+There is plenty more to do within the kernel. Follow along at the [Deno repo](https://github.com/denoland/deno) and [let me know](https://twitter.com/KyleRayKelley) what else you'd like to see. There's a whole world of possibilities.
 
-I know for me, the number one most important thing (after the kernel itself), is having DataFrames in Deno. I'm excited to see what we can do with Arrow and Polars. That's for another post though. Until then, happy experimenting!
+One area I'm particularly keen on is having excellent support for DataFrames in Deno. I'm excited to see what we can do with Arrow and Polars. That's for another post though. Until then, happy experimenting!
