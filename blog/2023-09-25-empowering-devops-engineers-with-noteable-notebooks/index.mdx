@@ -1,0 +1,171 @@
+---
+slug: empowering-devops-engineers-with-noteable-notebooks
+title: "Empowering DevOps engineers with Noteable notebooks"
+authors: [ana]
+description: "Taking DevOps to the Next Level"
+tags:
+  [
+    notebooks,
+    devops,
+    automation,
+    secrets,
+    community,
+  ]
+---
+
+I'm a DevOps engineer with six years of hands-on experience in the field. Over the years, I've dived deep into the world of DevOps, constantly seeking ways to improve and adapt. My journey has been a blend of experience and curiosity, leading me to some exciting discoveries.
+
+I've seen firsthand how automation can empower our daily activities. Automation, however, is only part of the equation. Effective collaboration and communication are equally essential in our ever-evolving DevOps landscape. This is where Noteable notebooks come into the spotlight.
+
+Noteable takes the concept of Jupyter notebooks to new heights by providing a collaborative and cloud-powered environment. It's a space where your DevOps expertise can be transformed into interactive documents that not only solve problems but also tell stories.
+
+## Privileged access review
+
+Let me tell you about a particular use case that I have recently implemented in my daily activities as part of our security compliance controls: Privileged access review. 
+
+Conducting access reviews involves manually checking user privileges across multiple tools and systems. This process was time consuming and error prone. Any oversight or error in the process could potentially lead to security vulnerabilities or compliance issues, which are risks that organizations cannot afford to take.
+
+### Unlocking Secrets and APIs
+
+Noteable offers [Secrets Management](https://docs.noteable.io/product-docs/work-with-data/store-credentials-for-data-and-applications) to allow teams to securely store and share connection credentials and other sensitive information. As DevOps engineers, having a centralized repository for secrets simplifies the process of securing our interactions with external services, reducing the risk of unauthorized access or data exposure.
+
+<center>
+  <img src={require("./create-a-secret.gif").default} width="50%" />
+</center>
+
+Once we have stored our credentials within Noteable, we can easily automate API calls to various vendors. This functionality is particularly valuable because it allows us to tailor automation to our specific use cases. Whether it's provisioning cloud resources, configuring network settings, or interacting with third-party APIs, Noteable's secrets management empowers us to automate these tasks with confidence.
+
+### Okta API
+
+Let's go back to privileged access review; leveraging Noteable's capabilities and integrating it with the Okta API allowed me to streamline this critical process.
+
+Here's how it went down: I explored the capabilities of the [Okta API](https://support.okta.com/help/s/article/Create-a-Custom-Report-by-using-Okta-API-calls?language=en_US) to gather all the essential details about our users and their access levels across our toolbox. This included the raw data: user roles, permissions, and any recent changes.
+
+```python cell count=1
+import requests
+import os
+import pandas
+
+# Set up API parameters
+base_url = os.environ['OKTA_URL']
+api_token = os.environ['OKTA_TOKEN']
+
+# Make API call to get user's ID
+headers = {
+    "Accept": "application/json",
+    "Content-Type": "application/json",
+    "Authorization": "SSWS " + api_token
+}
+response = requests.get(base_url + "/api/v1/users/", headers=headers)
+
+# Print out user ID
+users = response.json()
+user_data = []
+for user in users:
+    user_data.append({"Login Email": user["profile"]["login"], "User ID": user["id"]})
+user_df = pd.DataFrame(user_data)
+user_df
+```
+
+Next up, I put Noteable's Data Exploration and Visualization (DEX) tools to work. These handy tools allowed me to turn that raw data into visually appealing reports; they can now be easily understood by everyone, from technical colleagues to individuals in different departments and external auditors alike.
+
+<center>
+  <img src={require("./infrastructure-access.png").default} width="85%" />
+</center>
+<center>
+  <small>Noteable dashboard</small>
+</center>
+
+## User activity analysis
+
+Let’s jump into another detailed example that integrates all the features we've explored. This is a situation when I was tackling a surge of crypto-mining attacks; a scenario that requires a comprehensive approach. You can draw inspiration from our real-world case study described in the blog ["How to Handle High Volumes of Crypto-Mining Attacks While Still Offering a Free Plan"](https://noteable.io/blog/how-to-handle-high-volumes-crypto-mining-attacks-while-still-offering-a-free-plan-compute/).
+
+### Navigating Auth0's Authentication API
+Time to break down the process step by step. Here's how to use the Auth0 authentication API within Noteable:
+1. **Understanding the Basics**: Before diving in, take a moment to familiarize yourself with the Auth0 authentication API. You can find comprehensive documentation at [Auth0's API Documentation](https://auth0.com/docs/api).
+2. **Setting Up the Noteable Environment**: Within the Noteable platform, [create a new notebook](https://docs.noteable.io/product-docs/work-with-notebooks/create-and-manage-notebooks) or open an existing one. This will be your workspace for interacting with the Auth0 API.
+3. **Importing Necessary Libraries**: Begin by importing any Auth0 libraries you'll need to make API requests. For additional information refer to to [Auth0-Python documentation](https://github.com/auth0/auth0-python).
+
+```python cell count=3
+pip install auth0-python
+from auth0.authentication import GetToken
+from auth0.management import Auth0
+```
+
+:::info
+
+Before moving to the next step, you must get an Auth0 short-lived access token, your Auth0 tenant domain and the Auth0 application/client ID. You can obtain all from [Auth0 dashboard](https://manage.auth0.com/dashboard/)
+:::
+
+4. **Configuring Secrets in Noteable**: Noteable provides a robust solution to shield sensitive data like API keys. To ensure your Auth0 API key remains protected, follow these steps to [store credentials and secrets](https://docs.noteable.io/product-docs/work-with-data/store-credentials-for-data-and-applications).
+
+```python cell count=4
+
+# Your Auth0 credentials
+domain = "my-amazing-domain.us.auth0.com"
+client_id = os.environ["AUTH0_CLIENT_ID"]
+client_secret = os.environ["AUTH0_CLIENT_SECRET"]
+
+# Get a management token
+get_token = GetToken(domain, client_id, client_secret)
+token = get_token.client_credentials(
+    f"https://{domain}/api/v2/"
+)
+mgmt_api_token = token["ACCESS_TOKEN"]
+
+# Initialize Auth0 management API
+auth0 = Auth0(domain, mgmt_api_token)
+```
+
+5. **Crafting the API Request**: Using the Auth0 API's endpoints and methods outlined in their documentation, construct the API request. This might involve making requests to retrieve user data, authentication logs, or any other relevant information.
+
+```python cell count=5
+# Get list of all users
+users = auth0.users.list()
+```
+
+6. **Parsing the Response**: Once you receive a response from the Auth0 API, extract the data you need for your specific use case. This could be data related to daily sign-ups, user activity, or any other relevant metrics.
+
+```python cell count=6
+# Get list of all users
+# Get list of all users and filter by blocked
+users = auth0.users.list(q='blocked:true')
+
+# Extract desired fields from the JSON response
+user_data = [{'email': user['email'], 'created_at': user['created_at'], 'blocked': user['blocked']} for user in users['users']]
+```
+
+7. **Visualizing the Data**: Use visualization libraries like pandas to create meaningful tables from the data you've obtained. This step turns raw data into insights that are easy to understand.
+
+```python cell count=7
+import pandas
+
+# Create a DataFrame from the extracted data
+user_df = pd.DataFrame(user_data)
+
+# Print the DataFrame with filtered fields
+user_df
+
+```
+
+:::tip
+
+Easily create a visualization any time data is returned within Noteable, either as an output to a Python cell or as the result of a SQL cell query.
+:::
+
+<center>
+  <img src={require("./dex-new-view.gif").default} width="85%" />
+</center>
+<center>
+  <small>DEX views</small>
+</center>
+
+8. **Sharing the Insights**: As part of Noteable's collaborative capabilities, consider [sharing your notebook](https://docs.noteable.io/product-docs/collaborate/collaborate-with-files) with relevant team members. This fosters discussions and allows others to benefit from your insights.
+
+:::tip
+**Pro tip**: Noteable provides a simple [scheduling functionality](https://docs.noteable.io/product-docs/work-with-notebooks/schedule-notebooks) that allows users to have a notebook version executed on a fixed schedule. Notebooks can be executed hourly, daily, weekly, or monthly. 
+:::
+
+## Conclusion
+
+Looking ahead, I see even more opportunities to leverage Noteable's capabilities across various facets of DevOps. From automating deployment pipelines to enhancing monitoring and reporting, the potential is vast. Noteable has not only positively impacted my current DevOps activities but also ignited a sense of excitement for the future. I can already envision various scenarios where Noteable can be integrated, but more importantly, I can see the potential to leverage its diverse features not just from a technical standpoint but also to share valuable insights with a broader audience.
