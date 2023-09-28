@@ -20,3 +20,8 @@ ana:
   name: Ana Rodriguez
   title: Senior Devops Engineer @ Noteable
   image_url: https://github.com/ana-rod.png
+
+noel:
+  name: Noel Cothren
+  title: Senior UI Engineer @ Noteable
+  image_url: https://github.com/noeldevelops.png
