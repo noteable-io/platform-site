@@ -24,7 +24,7 @@ By early May 2023, Noteable released its own ChatGPT plugin, and almost instantl
 
 What set the Noteable plugin apart from other plugins was its ability to transform conversations into tangible data analysis, all encapsulated within a [Jupyter-notebook](https://jupyter.org/) compatible document. This breakthrough meant that users weren’t just getting answers; they were obtaining a detailed artifact of their entire analytical journey. Such a document serves as an invaluable asset for documentation, further analysis, and collaboration. The blend of conversational AI with the structured format of Jupyter notebooks provides both clarity and context, ensuring that insights derived from data aren't just momentary flashes but are well-recorded, replicable, and ready for deeper exploration.
 
-<mark>image of chatgpt + Noteable notebook UI here</mark>
+![](./chatgpt-noteable.png)
 
 Yet, as powerful as ChatGPT plugins are, they come with their own limitations. They operate separately from the OpenAI API and, for the time being, are tied exclusively to the GPT-4 model. This naturally prompts users to contemplate the potential of wider avenues beyond a single model or user interface.
 
@@ -101,10 +101,14 @@ def generate_function_json_schema(func):
 
         fields[name] = (type_annotation, default_value)
 
-    # create the pydantic model and return its JSON schema
+    schema = {}
+    # create the pydantic model and return its JSON schema to pass into the 'parameters' part of the
+    # function schema used by OpenAI
     model = create_model(func.__name__, **fields)
-    schema = model.schema()
-
+    parameters = model.schema()
+    schema['parameters'] = parameters
+    # OpenAI needs 'name' instead of 'title'
+    schema['name'] = parameters.pop('title')
     # also make sure we have the description of the function
     schema['description'] = inspect.getdoc(func)
     return schema
@@ -125,14 +129,16 @@ test_schema
 ```
 ```python cell output
 {
-    'title': 'test_func',
-    'type': 'object',
-    'properties': {
-        'foo': {'title': 'Foo', 'type': 'string'},
-        'bar': {'title': 'Bar', 'type': 'integer'},
-        'baz': {'title': 'Baz', 'type': 'object'}
+    'parameters': {
+        'type': 'object',
+        'properties': {
+            'foo': {'title': 'Foo', 'type': 'string'},
+            'bar': {'title': 'Bar', 'type': 'integer'},
+            'baz': {'title': 'Baz', 'type': 'object'}
+        },
+        'required': ['foo', 'bar']
     },
-    'required': ['foo', 'bar'],
+    'name': 'test_func',
     'description': 'Sample function'
 }
 ```
@@ -177,20 +183,15 @@ create_notebook_func_schema
 ```
 ```python cell output
 {
-    'title': 'create_notebook',
-    'type': 'object',
-    'properties': {
-        'project_id': {
-            'title': 'Project Id',
-            'type': 'string',
-            'format': 'uuid'
+    'parameters': {
+        'type': 'object',
+        'properties': {
+            'project_id': {'title': 'Project Id', 'type': 'string', 'format': 'uuid'},
+            'path': {'title': 'Path', 'type': 'string'}
         },
-        'path': {
-            'title': 'Path',
-            'type': 'string'
-        }
+        'required': ['project_id', 'path']
     },
-    'required': ['project_id', 'path'],
+    'name': 'create_notebook',
     'description': 'Create a Notebook in a Project'
 }
 ```
@@ -204,12 +205,14 @@ The new arguments we want to provide are `file_id`, `kernel_name`, and `hardware
 import uuid
 
 async def create_notebook_and_launch_kernel(
-    project_id: uuid.UUID, 
     file_path: str,
+    project_id: Optional[uuid.UUID] = None,
     kernel_name: str = "python3.9",
     hardware_size: str = "small",
 ) -> None:
     """Create a Notebook in a Project and launch a Kernel session."""
+    # if we're not specifying a project ID, just use what we pulled earlier
+    project_id = project_id or user_info.origamist_default_project_id
     file = await api_client.create_notebook(project_id, file_path)
     await api_client.launch_kernel(
         file_id=file.id,
@@ -217,53 +220,46 @@ async def create_notebook_and_launch_kernel(
         hardware_size=hardware_size,
     )
 
-start_notebook_schema = generate_function_json_schema(create_notebook_and_launch_kernel)
-start_notebook_schema
+
+start_notebook_func_schema = generate_function_json_schema(create_notebook_and_launch_kernel)
+start_notebook_func_schema
 ```
 ```python cell output
 {
-    'title': 'create_notebook_and_launch_kernel',
-    'type': 'object',
-    'properties': {
-        'project_id': {
-            'title': 'Project Id', 
-            'type': 'string', 
-            'format': 'uuid'
+    'parameters': {
+        'type': 'object',
+        'properties': {
+            'file_path': {'title': 'File Path', 'type': 'string'},
+            'project_id': {'title': 'Project Id', 'type': 'string', 'format': 'uuid'},
+            'kernel_name': {'title': 'Kernel Name', 'default': 'python3.9', 'type': 'string'},
+            'hardware_size': {'title': 'Hardware Size', 'default': 'small', 'type': 'string'}
         },
-        'file_path': {
-            'title': 'File Path', 
-            'type': 'string'
-        },
-        'kernel_name': {
-            'title': 'Kernel Name',
-            'default': 'python3.9',
-            'type': 'string'
-        },
-        'hardware_size': {
-            'title': 'Hardware Size',
-            'default': 'small',
-            'type': 'string'
-        }
+        'required': ['file_path']
     },
-    'required': ['project_id', 'file_path'],
+    'name': 'create_notebook_and_launch_kernel',
     'description': 'Create a Notebook in a Project and launch a Kernel session.'
 }
 ```
 
-### 3. Adding Cells and Content
-Since updating the Notebook document and executing cells are handled as part of the Real-Time Update (RTU) modeling, we need to set up our RTU client. To avoid overloading our first function for OpenAI, let's create another that will be solely responsible for connecting to a file via RTU, and then adding a cell with content.
+### 3. Adding Cell Content and Executing Code
+Since updating the Notebook document and executing cells are handled as part of the Real-Time Update (RTU) modeling, we need to set up our RTU client. To avoid overloading our first function for OpenAI, let's create another that will be solely responsible for connecting to a file via RTU, adding a cell with content, and optionally executing that cell.
 
 ```python cell
-from origami.models.notebook import CodeCell, MarkdownCell
+import asyncio
 from typing import Literal
 
-async def add_cell_content(
+from origami.models.notebook import CodeCell, MarkdownCell
+
+
+async def add_cell_to_notebook(
     file_id: uuid.UUID,
     cell_source: str,
     cell_type: Literal["code", "markdown"] = "code",
     after_cell_id: Optional[str] = None,
     execute: bool = False,
 ) -> None:
+    """Add a cell to a Notebook file and optionally execute it."""
+
     # connect to a Notebook file via RTU
     rtu_client = await api_client.connect_realtime(file_id)
     
@@ -279,7 +275,7 @@ async def add_cell_content(
 
     # add the cell to the notebook document
     cell = await rtu_client.add_cell(
-        cell=cell,
+        cell=new_cell,
         after_id=after_cell_id,
     )
 
@@ -288,52 +284,56 @@ async def add_cell_content(
         return cell
     
     # return the cell after it's been executed
-    queued_execution = await realtime_notebook.queue_execution(cell.id)
+    queued_execution = await rtu_client.queue_execution(cell.id)
     cells = await asyncio.gather(*queued_execution)
     return cells[0]
 
-add_cell_content_schema = generate_function_json_schema(add_cell_content)
-add_cell_content_schema
+add_cell_func_schema = generate_function_json_schema(add_cell_to_notebook)
+add_cell_func_schema
 ```
 ```python cell output
 {
-    'title': 'add_cell_content',
-    'type': 'object',
-    'properties': {
-        'file_id': {
-            'title': 'File Id',
-            'type': 'string',
-            'format': 'uuid'
+    'parameters': {
+        'type': 'object',
+        'properties': {
+            'file_id': {'title': 'File Id', 'type': 'string', 'format': 'uuid'},
+            'cell_source': {'title': 'Cell Source', 'type': 'string'},
+            'cell_type': {
+                'title': 'Cell Type',
+                'default': 'code',
+                'enum': ['code', 'markdown'],
+                'type': 'string'
+            },
+            'after_cell_id': {'title': 'After Cell Id', 'type': 'string'},
+            'execute': {'title': 'Execute', 'default': False, 'type': 'boolean'}
         },
-        'cell_source': {
-            'title': 'Cell Source',
-            'type': 'string'
-        },
-        'cell_type': {
-            'title': 'Cell Type',
-            'default': 'code',
-            'enum': ['code', 'markdown'],
-            'type': 'string'
-        },
-        'after_cell_id': {
-            'title': 'After Cell Id',
-            'type': 'string'
-        },
-        'execute': {
-            'title': 'Execute',
-            'default': False,
-            'type': 'boolean'
-        }
+        'required': ['file_id', 'cell_source']
     },
-    'required': ['file_id', 'cell_source'],
-    'description': None
+    'name': 'add_cell_to_notebook',
+    'description': 'Add a cell to a Notebook file and optionally execute it.'
 }
 ```
 
-### 4. Executing (Code) Cells
+### 4. Retrieving Cell Output
+Once we have enough content in our Notebook, we need an easy way of getting the contents and associated outputs
+```python cell
 
+```
+```python cell output
 
-### 5. Retrieving Cell Output
-
+```
 
 ## Prompts and Parsing Responses
+The hardest part is out of the way, and now we can test out our function schemas with some prompting.
+
+```python cell
+messages = []
+functions = [
+    start_notebook_func_schema,
+    add_cell_func_schema,
+    get_notebook_state_func_schema
+]
+```
+```python cell output
+
+```
