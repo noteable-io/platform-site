@@ -1,6 +1,6 @@
 ---
 slug: origami-openai
-title: "Noteable and LLMs: Part 1, OpenAI and Origami"
+title: "Noteable and LLMs, Part 1: Introduction to OpenAI Function Calling with Origami"
 authors: [shoup]
 description: "Leveraging the power of LLMs and the Noteable APIs outside of ChatGPT"
 tags:
@@ -30,34 +30,37 @@ Yet, as powerful as ChatGPT plugins are, they come with their own limitations. T
 
 # Interacting with the Noteable API with OpenAI's function calling API
 
-For the curious minds and the restless tinkerers, this post is for you. Let's embark on a journey to uncover how to interface with the Noteable API using its foundational python package, `origami`, while also leveraging the power of OpenAI's function calling API.
+For the curious minds and the restless tinkerers, this post is for you. Let's embark on a journey to uncover how to interface with the Noteable API using its foundational python package, `origami`, while also leveraging the power of OpenAI's function calling API. 
+
+:::note
+Feel free to look at the OpenAI [function calling docs](https://platform.openai.com/docs/guides/gpt/function-calling) for reference as we move along.
+:::
+
+As a quick summary, the OpenAI function calling API allows users or services to expose functionality to an LLM, so when a prompt is sent, the LLM can respond with a suggestion to call on that exposed functionality. It does **not** allow the LLM call the function directly.
 
 ## Install Dependencies
 
 To get started, we first need to install some Python packages into our Python environment of choice: 
-+ [`origami`](https://noteable-io.github.io/origami/quickstart/)
++ [`noteable-origami`](https://noteable-io.github.io/origami/quickstart/)
 + [`openai`](https://platform.openai.com/docs/api-reference?lang=python)
-+ [`pydantic`](https://docs.pydantic.dev/1.10/)
 
 In a notebook environment:
 ```python cell
-!pip install noteable-origami openai "pydantic<2.0"
+!pip install noteable-origami openai
 ```
 Or in a terminal:
 ```bash
-pip install noteable-origami openai "pydantic<2.0"
+pip install noteable-origami openai
 ```
-_*We're using pydantic v1.x since `origami` hasn't migrated to pydantic v2.x yet_
 
 ## Authentication
-We'll need both an [`OPENAI_API_KEY`](https://platform.openai.com/docs/libraries/python-library) as well as [`NOTEABLE_TOKEN`](https://noteable-io.github.io/origami/quickstart/#api-tokens) to authenticate to both services.
+We'll need both an [`OPENAI_API_KEY`](https://platform.openai.com/docs/libraries/python-library) as well as [`NOTEABLE_TOKEN`](https://noteable-io.github.io/origami/quickstart/#api-tokens) as environment variables in to authenticate to both services.
 
 ```python cell
 import openai
 import os
 
 openai.api_key = os.environ['OPENAI_API_KEY']
-noteable_token = os.environ['NOTEABLE_TOKEN']
 ```
 
 ## Function Calling Setup
@@ -67,273 +70,303 @@ To enable OpenAI's function calling API to use `origami` functions, we'll need t
 - sending a request to the OpenAI chat completion API
 - parsing the response with function calling arguments
 
-Let's get started by breaking down each step. Feel free to look at the OpenAI [function calling docs](https://platform.openai.com/docs/guides/gpt/function-calling) for reference as well.
+Let's get started by breaking down each step. For the first portions of this blog series, we'll be creating the function schemas by hand. This will help get a base understanding of what OpenAI is looking for, and we'll do this using a couple different examples.
 
-First, we'll make a convenience function to turn our functions and methods into JSON schemas for the function calling API. Using [`pydantic`](https://docs.pydantic.dev/latest/)* and the [`inspect`](https://docs.python.org/3/library/inspect.html) module together makes this very easy. We'll need this later since we don't want to create each JSON schema by hand.
+The following is a very basic function that takes three arguments of different variable types, with the last one, `baz`, being optional.
 
 ```python cell
-from pydantic import create_model
-import inspect
-
-
-def generate_function_json_schema(func):
-    """Use a function/method's signature to create a Pydantic model for easy generation of a JSON
-    schema.
-    """
-    sig = inspect.signature(func)
-
-    # extract function parameters and their type annotations
-    fields = {}
-    for name, param in sig.parameters.items():
-        # skip 'self' for class methods
-        if name == "self":
-            continue
-
-        # determine type annotation
-        type_annotation = inspect._empty
-        if param.annotation != inspect.Parameter.empty:
-            type_annotation = param.annotation
-
-        # get the default value
-        default_value = ...
-        if param.default != inspect.Parameter.empty:
-            default_value = param.default
-
-        fields[name] = (type_annotation, default_value)
-
-    schema = {}
-    # create the pydantic model and return its JSON schema to pass into the 'parameters' part of the
-    # function schema used by OpenAI
-    model = create_model(func.__name__, **fields)
-    parameters = model.schema()
-    schema['parameters'] = parameters
-    # OpenAI needs 'name' instead of 'title'
-    schema['name'] = parameters.pop('title')
-    # also make sure we have the description of the function
-    schema['description'] = inspect.getdoc(func)
-    return schema
+def test_func(
+    foo: str,
+    bar: int,
+    baz: Optional[dict] = None,
+):
+    """Sample function"""
+    print(f"ChatGPT's favorite food is {foo}.")
+    print(f"It thought about the Roman Empire {bar} time(s).")
+    if baz:
+        rprint(f"Its favorite rock stars are: {baz}")
+    else:
+        rprint("It doesn't have any favorite rock stars.")
 ```
+
+The main parts of the function schema are the `name`, `description`, and the `parameters`.
+
+```json
+{
+    "name": "test_func",
+    "description": "Sample function",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            # fill in the arguments here
+        },
+        "required": [
+            # add required argument names here
+        ],
+    },
+}
+```
+Once we fill in the function arguments and add some basic descriptions, we might end up with something like this:
+```python cell
+test_func_schema = {
+    "name": "test_func",
+    "description": "Sample function",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "foo": {
+                "type": "string",
+                "description": "Your favorite food",
+            },
+            "bar": {
+                "type": "integer",
+                "description": "The number of times you've thought about the Roman Empire",
+            },
+            "baz": {
+                "type": "object",
+                "description": "Names and ages of your favorite rock stars",
+            },
+        },
+        "required": ["foo", "bar"],
+    },
+}
+```
+After that, we can pass it to OpenAI with a basic prompt.
+
 :::note
-If you're using `pydantic` version 2.x, you may need to change the syntax above to use `model_json_schema` instead of `.schema()`
-https://docs.pydantic.dev/latest/concepts/json_schema/
+We're explicitly passing in `function_call={"name": "test_func"}` here to see the function call response. It's set to `auto` by default, which means we may get either a basic text response or a function call response.
+
+See [related docs](https://platform.openai.com/docs/api-reference/chat/create#function_call).
 :::
 
-As a quick example of what our convenience function does:
 ```python cell
-def test_func(foo: str, bar: int, baz: Optional[dict] = None):
-    """Sample function"""
-    pass
-
-test_schema = generate_function_json_schema(test_func)
-test_schema
+response = openai.ChatCompletion.create(
+    messages=[{
+        "role": "user",
+        "content": "print some made-up data."
+    }],
+    functions=[test_func_schema],
+    model="gpt-3.5-turbo",
+    function_call={"name": "test_func"},
+)
+response_message = response.choices[0]['message'].to_dict_recursive()
+response_message
 ```
 ```python cell output
 {
-    'parameters': {
-        'type': 'object',
-        'properties': {
-            'foo': {'title': 'Foo', 'type': 'string'},
-            'bar': {'title': 'Bar', 'type': 'integer'},
-            'baz': {'title': 'Baz', 'type': 'object'}
-        },
-        'required': ['foo', 'bar']
-    },
-    'name': 'test_func',
-    'description': 'Sample function'
-}
-```
-Great! Let's keep going.
-
-Next, we'll need to create a Noteable `APIClient` to make HTTP requests. First, using our `noteable_token` to get the default project ID.
-```python cell
-from origami.clients.api import APIClient
-
-api_client = APIClient(noteable_token)
-user_info = await api_client.user_info()
-# use the same user-default project id as ChatGPT
-project_id = user_info.origamist_default_project_id
-project_id
-```
-```python cell output
-UUID('a1b2c3d4-e5f6-4a7b-8123-abcdef123456')
-```
-
-For OpenAI to handle everything we want to accomplish, we'll need JSON schemas for the following operations:
-+ creating a notebook
-+ launching a kernel
-+ adding cells and content
-+ executing cells
-+ retrieving cell output
-
-### 1. Creating a Notebook
-To create a Notebook, we'll want to make HTTP requests to the Noteable REST API with OpenAI providing the (hopefully) correct parameters.
-
-Based on the [`origami` docs](https://noteable-io.github.io/origami/quickstart/#creating-a-new-notebook), we need to use `api_client.create_notebook()`, which takes a `project_id` (which we already have), and an optional `notebook` parameter that we don't need for this guide. 
-
-You can either pass the `api_client.create_notebook` method directly into `generate_function_json_schema()`, or create a lightweight wrapper function, such as:
-```python cell
-import uuid
-
-async def create_notebook(project_id: uuid.UUID, path: str):
-    """Create a Notebook in a Project"""
-    return await api_client.create_notebook(project_id, path)
-
-create_notebook_func_schema = generate_function_json_schema(create_notebook)
-create_notebook_func_schema
-```
-```python cell output
-{
-    'parameters': {
-        'type': 'object',
-        'properties': {
-            'project_id': {'title': 'Project Id', 'type': 'string', 'format': 'uuid'},
-            'path': {'title': 'Path', 'type': 'string'}
-        },
-        'required': ['project_id', 'path']
-    },
-    'name': 'create_notebook',
-    'description': 'Create a Notebook in a Project'
+    'role': 'assistant',
+    'content': None,
+    'function_call': {
+        'name': 'test_func', 
+        'arguments': '{\n  "foo": "pizza",\n  "bar": 10\n}'
+    }
 }
 ```
 
-### 2. Launching a Kernel
-We can launch a kernel using [`api_client.launch_kernel`](https://noteable-io.github.io/origami/quickstart/#launching-a-kernel), but since we can assume we'll always need a kernel running to execute code, let's update our existing wrapper function instead of creating a new one.
+```python cell
+import json
 
-The new arguments we want to provide are `file_id`, `kernel_name`, and `hardware_size`.
+call_args = json.loads(response_message["function_call"]["arguments"])
+result = test_func(**call_args)
+result
+```
+```cell output
+ChatGPT's favorite food is pizza.
+It thought about the Roman Empire 10 time(s).
+It doesn't have any favorite rock stars.
+```
+
+Now let's switch to a more relevant example. Next, we'll write a function that can create a new Noteable notebook and start a kernel for us.
 
 ```python cell
 import uuid
+
+from origami.models.api.files import File
+from origami.models.kernels import KernelSession
+
 
 async def create_notebook_and_launch_kernel(
     file_path: str,
     project_id: Optional[uuid.UUID] = None,
     kernel_name: str = "python3.9",
     hardware_size: str = "small",
-) -> None:
+) -> dict:
     """Create a Notebook in a Project and launch a Kernel session."""
     # if we're not specifying a project ID, just use what we pulled earlier
     project_id = project_id or user_info.origamist_default_project_id
-    file = await api_client.create_notebook(project_id, file_path)
-    await api_client.launch_kernel(
+    file: File = await api_client.create_notebook(project_id, file_path)
+    kernel_session: KernelSession = await api_client.launch_kernel(
         file_id=file.id,
         kernel_name=kernel_name,
         hardware_size=hardware_size,
     )
-
-
-start_notebook_func_schema = generate_function_json_schema(create_notebook_and_launch_kernel)
-start_notebook_func_schema
+    return {
+        'file_url': file.url,
+        'kernel_state': kernel_session.kernel.execution_state,
+    }
 ```
-```python cell output
-{
-    'parameters': {
-        'type': 'object',
-        'properties': {
-            'file_path': {'title': 'File Path', 'type': 'string'},
-            'project_id': {'title': 'Project Id', 'type': 'string', 'format': 'uuid'},
-            'kernel_name': {'title': 'Kernel Name', 'default': 'python3.9', 'type': 'string'},
-            'hardware_size': {'title': 'Hardware Size', 'default': 'small', 'type': 'string'}
-        },
-        'required': ['file_path']
-    },
+
+Using the function above for reference, we can create its function schema:
+
+```python
+start_notebook_func_schema = {
     'name': 'create_notebook_and_launch_kernel',
-    'description': 'Create a Notebook in a Project and launch a Kernel session.'
-}
-```
-
-### 3. Adding Cell Content and Executing Code
-Since updating the Notebook document and executing cells are handled as part of the Real-Time Update (RTU) modeling, we need to set up our RTU client. To avoid overloading our first function for OpenAI, let's create another that will be solely responsible for connecting to a file via RTU, adding a cell with content, and optionally executing that cell.
-
-```python cell
-import asyncio
-from typing import Literal
-
-from origami.models.notebook import CodeCell, MarkdownCell
-
-
-async def add_cell_to_notebook(
-    file_id: uuid.UUID,
-    cell_source: str,
-    cell_type: Literal["code", "markdown"] = "code",
-    after_cell_id: Optional[str] = None,
-    execute: bool = False,
-) -> None:
-    """Add a cell to a Notebook file and optionally execute it."""
-
-    # connect to a Notebook file via RTU
-    rtu_client = await api_client.connect_realtime(file_id)
-    
-    # create the new cell model
-    if cell_type == "code":
-        new_cell = CodeCell(source=cell_source)
-    elif cell_type == "markdown":
-        new_cell = MarkdownCell(source=cell_source)
-
-    # if no `after_cell_id` was passed, add it to the end of the Notebook
-    if not after_cell_id:
-        after_cell_id = rtu_client.cell_ids[-1]
-
-    # add the cell to the notebook document
-    cell = await rtu_client.add_cell(
-        cell=new_cell,
-        after_id=after_cell_id,
-    )
-
-    if cell_type == "markdown" or not execute:
-        # return the cell immediately, without executing it
-        return cell
-    
-    # return the cell after it's been executed
-    queued_execution = await rtu_client.queue_execution(cell.id)
-    cells = await asyncio.gather(*queued_execution)
-    return cells[0]
-
-add_cell_func_schema = generate_function_json_schema(add_cell_to_notebook)
-add_cell_func_schema
-```
-```python cell output
-{
+    'description': 'Create a Notebook in a Project and launch a Kernel session.',
     'parameters': {
         'type': 'object',
         'properties': {
-            'file_id': {'title': 'File Id', 'type': 'string', 'format': 'uuid'},
-            'cell_source': {'title': 'Cell Source', 'type': 'string'},
-            'cell_type': {
-                'title': 'Cell Type',
-                'default': 'code',
-                'enum': ['code', 'markdown'],
-                'type': 'string'
+            'file_path': {
+                'type': 'string',
+                'description': 'Path to the file to create. Must end in .ipynb.',
             },
-            'after_cell_id': {'title': 'After Cell Id', 'type': 'string'},
-            'execute': {'title': 'Execute', 'default': False, 'type': 'boolean'}
+            'project_id': {
+                'type': 'string',
+                'format': 'uuid',
+                'description': 'If not specified, will use the user\'s default project.',
+            },
+            'kernel_name': {
+                'type': 'string',
+                'description': 'Name of the kernel to launch.',
+                'default': 'python3.9',
+            },
+            'hardware_size': {
+                'type': 'string',
+                'description': 'Hardware size of the kernel.',
+                'default': 'small',
+            },
         },
-        'required': ['file_id', 'cell_source']
+        'required': ['file_path'],
     },
-    'name': 'add_cell_to_notebook',
-    'description': 'Add a cell to a Notebook file and optionally execute it.'
 }
 ```
 
-### 4. Retrieving Cell Output
-Once we have enough content in our Notebook, we need an easy way of getting the contents and associated outputs
-```python cell
+This time, we'll try it out without specifying the `function_call` argument.
 
+```python cell
+response = openai.ChatCompletion.create(
+    messages=[
+        {
+            "role": "user",
+            "content": "Make a notebook for making a 3d scatterplot using the plotly python package",
+        }
+    ],
+    functions=[start_notebook_func_schema],
+    model="gpt-3.5-turbo",
+)
+response_message = response.choices[0]['message'].to_dict_recursive()
+response_message
 ```
 ```python cell output
-
+{
+    'role': 'assistant',
+    'content': None,
+    'function_call': {
+        'name': 'create_notebook_and_launch_kernel',
+        'arguments': '{\n  "file_path": "3D_Scatterplot.ipynb",\n  "kernel_name": "python3.9"\n}'}
+}
 ```
 
-## Prompts and Parsing Responses
-The hardest part is out of the way, and now we can test out our function schemas with some prompting.
+Now if we run the arguments it provided:
 
+```python
+call_args = json.loads(response_message["function_call"]["arguments"])
+file_kernel = await create_notebook_and_launch_kernel(**call_args)
+file_kernel
+```
+```python cell output
+{
+    'file_url': 'https://app.noteable.io/f/bcd12345-6789-4abc-d012-3456abcdef90/3D_Scatterplot.ipynb',
+    'kernel_state': 'requested'
+}
+```
+
+# Putting it all together
+
+The basics are done, and all that's left is to clean it up into a convenience function to enable a feedback loop. To do this, we'll build up a `messages` list that includes our first prompt, along with the assistant responses along the way.
+
+```python
+async def run_conversation(
+    prompt: Optional[str] = None,
+    messages: Optional[list] = None,
+    model: str = "gpt-3.5-turbo",
+) -> list:
+    """Run a conversation with a given model."""
+    messages = messages or []
+    if prompt:
+        messages.append({"role": "user", "content": prompt})
+
+    response = openai.ChatCompletion.create(
+        messages=messages,
+        functions=[start_notebook_func_schema],
+        model=model,
+    )
+    response_message = response.choices[0]['message'].to_dict_recursive()
+    messages.append(response_message)
+
+    # since we didn't specify `function_call={"name": "create_notebook_and_launch_kernel"}`, we need
+    # to check if the response has a function call or if it's just a content string
+    if "function_call" not in response_message.keys():
+        print(f"Assistant: {response_message["content"]}")
+        return messages
+
+    call_args = json.loads(response_message["function_call"]["arguments"])
+    try:
+        file_kernel: dict = await create_notebook_and_launch_kernel(**call_args)
+        system_message = (
+            f"The file was successfully created and a kernel was launched. "
+            f"Kernel state: `{file_kernel['kernel_state']}` "
+            f"File URL: `{file_kernel['file_url']}`"
+        )
+    except Exception as e:
+        system_message = f"Problem creating a file or starting a kernel session: `{e}`"
+
+    # add a system message to the conversation to let the assistant know that the kernel session was
+    # created, along with its current execution state
+    messages.append(
+        {
+            "role": "system",
+            "content": system_message,
+        }
+    )
+    return await run_conversation(messages=messages)
+```
 ```python cell
-messages = []
-functions = [
-    start_notebook_func_schema,
-    add_cell_func_schema,
-    get_notebook_state_func_schema
+messages = await run_conversation("create a new notebook for making a 3d scatterplot using the plotly python package")
+```
+```markdown cell output
+Assistant: I have created a new notebook for you to make a 3D scatter plot using the Plotly Python package. You can access the notebook using the following link: [plot_3d_scatterplot.ipynb](https://app.noteable.io/f/6e30c7db-9a80-4bcd-aa0f-9f4dbe46a740/plot_3d_scatterplot.ipynb).
+```
+
+If we go to that link, we see the Notebook was created and the kernel successfully launched. 🎉
+
+![](part1-created-notebook.png)
+
+```python cell output
+[
+    {
+        'role': 'user',
+        'content': 'create a new notebook for making a 3d scatterplot using the plotly python package'
+    },
+    {
+        'role': 'assistant',
+        'content': None,
+        'function_call': {
+            'name': 'create_notebook_and_launch_kernel',
+            'arguments': '{\n  "file_path": "plot_3d_scatterplot.ipynb",\n  "kernel_name": "python3.9"\n}'
+        }
+    },
+    {
+        'role': 'system',
+        'content': 'The file was successfully created and a kernel was launched. Kernel state: `requested` File URL: `https://app.noteable.io/f/6e30c7db-9a80-4bcd-aa0f-9f4dbe46a740/plot_3d_scatterplot.ipynb`'
+    },
+    {
+        'role': 'assistant',
+        'content': 'I have created a new notebook for you to make a 3D scatter plot using the Plotly Python package. You can access the notebook using the following link: [plot_3d_scatterplot.ipynb](https://app.noteable.io/f/6e30c7db-9a80-4bcd-aa0f-9f4dbe46a740/plot_3d_scatterplot.ipynb).'
+    }
 ]
 ```
-```python cell output
 
-```
+# Recap
+
+
+Check out Part 2 for our next steps -- adding cell content, executing code, and retrieving outputs!
