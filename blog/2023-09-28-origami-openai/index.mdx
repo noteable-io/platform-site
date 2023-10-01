@@ -391,6 +391,9 @@ Ideally, the conversation should flow like this:
 (In a more complicated example with multiple functions, we would probably use a dictionary of `func_name: func` pairs to call the correct function depending on value of the `["function_call"]["name"]` in the response.)
 
 ```python cell count=9
+from IPython.display import Markdown, display
+
+
 async def run_conversation(
     prompt: Optional[str] = None,
     messages: Optional[list] = None,
@@ -426,10 +429,14 @@ async def run_conversation(
     if "function_call" not in response_message.keys():
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3bd81d0 (use OutputBlock and fix markdown display)
         # we got a text/content response; display it as markdown for easy viewing, then exit cleanly
         display(
             Markdown(f"Assistant: {response_message['content']}")
         )
+<<<<<<< HEAD
         return messages
 
     # time to parse the args and call our function!
@@ -441,6 +448,8 @@ async def run_conversation(
 =======
         # we got a text/content response; print it out for easy viewing and exit cleanly
         print(f"Assistant: {response_message["content"]}")
+=======
+>>>>>>> 3bd81d0 (use OutputBlock and fix markdown display)
         return messages
 
     # time to parse the args and call our function!
@@ -508,9 +517,11 @@ messages
 ```python cell count=10
 messages = await run_conversation("create a new notebook for making a 3d scatterplot using the plotly python package")
 ```
-```markdown cell output count=10
+<OutputBlock count={10}>
+
 Assistant: I have created a new notebook for you to make a 3D scatter plot using the Plotly Python package. You can access the notebook using the following link: [plot_3d_scatterplot.ipynb](https://app.noteable.io/f/6e30c7db-9a80-4bcd-aa0f-9f4dbe46a740/plot_3d_scatterplot.ipynb).
-```
+
+</OutputBlock>
 
 If we go to that link, we see the Notebook was created and the kernel successfully launched. 🎉
 
