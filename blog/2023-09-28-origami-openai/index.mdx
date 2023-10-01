@@ -390,7 +390,7 @@ Ideally, the conversation should flow like this:
 
 (In a more complicated example with multiple functions, we would probably use a dictionary of `func_name: func` pairs to call the correct function depending on value of the `["function_call"]["name"]` in the response.)
 
-```python cell count=9
+```python cell count=10
 from IPython.display import Markdown, display
 
 
@@ -484,6 +484,7 @@ async def run_conversation(
     return await run_conversation(messages=messages)
 ```
 ```python cell count=11
+<<<<<<< HEAD
 messages = await run_conversation("create a new notebook for making a 3d scatterplot using the plotly python package")
 ```
 <OutputBlock count={11}>
@@ -515,9 +516,11 @@ messages
     return await run_conversation(messages=messages)
 ```
 ```python cell count=10
+=======
+>>>>>>> b9b36d0 (adjust cell counts and alt text)
 messages = await run_conversation("create a new notebook for making a 3d scatterplot using the plotly python package")
 ```
-<OutputBlock count={10}>
+<OutputBlock count={11}>
 
 Assistant: I have created a new notebook for you to make a 3D scatter plot using the Plotly Python package. You can access the notebook using the following link: [plot_3d_scatterplot.ipynb](https://app.noteable.io/f/6e30c7db-9a80-4bcd-aa0f-9f4dbe46a740/plot_3d_scatterplot.ipynb).
 
@@ -528,8 +531,15 @@ If we go to that link, we see the Notebook was created and the kernel successful
 ![Screenshot of a Noteable Notebook created with arguments provided by the LLM.](part1-created-notebook.png)
 
 And if we examine `messages`, we see each message that was generated during the conversation -- our starting prompt, the first assistant `function_call` response, the system message, and the final assistant text/content response.
+<<<<<<< HEAD
 ```python cell output
 >>>>>>> 9db12b2 (rework content to save portions for part 2)
+=======
+```python cell count=12
+messages
+```
+```python cell output count=12
+>>>>>>> b9b36d0 (adjust cell counts and alt text)
 [
     {
         'role': 'user',
@@ -572,6 +582,7 @@ That's it for this part of the series, be sure to check out Part 2 for our next 
 Thanks for reading!
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ![The Noteable Origami logo, depicting a snake made out of folded paper](./papersnake.svg)
 =======
 
@@ -580,3 +591,6 @@ Check out Part 2 for our next steps -- adding cell content, executing code, and 
 =======
 ![](./papersnake.svg)
 >>>>>>> 985af3d (more content updates)
+=======
+![The Noteable Origami logo, depicting a snake made out of folded paper](./papersnake.svg)
+>>>>>>> b9b36d0 (adjust cell counts and alt text)
