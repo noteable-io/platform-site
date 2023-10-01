@@ -75,6 +75,8 @@ Let's get started by breaking down each step. For the first portions of this blo
 The following is a very basic function that takes three arguments of different variable types, with the last one, `baz`, being optional.
 
 ```python cell count=1
+from typing import Optional
+
 def test_func(
     foo: str,
     bar: int,
@@ -84,9 +86,9 @@ def test_func(
     print(f"ChatGPT's favorite food is {foo}.")
     print(f"It thought about the Roman Empire {bar} time(s).")
     if baz:
-        rprint(f"Its favorite rock stars are: {baz}")
+        print(f"Its favorite rock stars are: {baz}")
     else:
-        rprint("It doesn't have any favorite rock stars.")
+        print("It doesn't have any favorite rock stars.")
 ```
 
 The main parts of the function schema are the `name`, `description`, and the `parameters`. (If you're familiar with JSON schemas at all, the `parameters` section should look familiar.)
@@ -185,9 +187,32 @@ It doesn't have any favorite rock stars.
 ```
 
 ### Example with `origami`
-Now let's switch to a more relevant example using the `origami` package. In this next cell, we'll write a function that can create a new Noteable Notebook and start a kernel for us.
+Now let's switch to a more relevant example using the `origami` package. Next, we'll write a function that can create a new Noteable Notebook and start a kernel for us. But first, we need a Noteable Project ID to work with. 
 
-(For the time being, we're only returning the Notebook's URL and the state of the kernel to pass as context back to the LLM in cells further down.)
+To keep things simple, we're going to use the same default Project as ChatGPT. You can swap this out for a Project of your choosing, though.
+
+:::note
+If you go to [Noteable](https://app.noteable.io), you'll likely see the Spaces page with at least one Project listed. Right-clicking and copying the link to one of those should give you a URL that looks like this:
+```
+https://app.noteable.io/p/a1b2c3d4-e5f6-4a7b-8123-abcdef123456/My-ChatGPT-Project
+```
+Copy/paste that UUID between the `/p/` and the name of the Project to provide it as the default here if you don't want to use the ChatGPT default.
+:::
+
+```python cell count=5
+from origami.clients.api import APIClient
+
+api_client = APIClient()
+user_info = await api_client.user_info()
+# use the same user-default project id as ChatGPT
+project_id = user_info.origamist_default_project_id
+project_id
+```
+```python cell output count=5
+UUID('a1b2c3d4-e5f6-4a7b-8123-abcdef123456')
+```
+
+Alright, onto creating our new Notebook-creating function.
 
 ```python cell count=5
 import uuid
@@ -217,6 +242,7 @@ async def create_notebook_and_launch_kernel(
         'kernel_state': kernel_session.kernel.execution_state,
     }
 ```
+(For the time being, we're only returning the Notebook's URL and the state of the kernel to pass as context back to the LLM in cells further down.)
 
 Using the function above for reference, we can create its function schema like how we did for `test_func` above. In this case, adding `description` properties to each argument is helpful context for the LLM.
 
