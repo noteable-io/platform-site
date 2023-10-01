@@ -214,7 +214,7 @@ UUID('a1b2c3d4-e5f6-4a7b-8123-abcdef123456')
 
 Alright, onto creating our new Notebook-creating function.
 
-```python cell count=5
+```python cell count=6
 import uuid
 
 from origami.models.api.files import File
@@ -246,7 +246,7 @@ async def create_notebook_and_launch_kernel(
 
 Using the function above for reference, we can create its function schema like how we did for `test_func` above. In this case, adding `description` properties to each argument is helpful context for the LLM.
 
-```python cell count=6
+```python cell count=7
 start_notebook_func_schema = {
     'name': 'create_notebook_and_launch_kernel',
     'description': 'Create a Notebook in a Project and launch a Kernel session.',
@@ -280,7 +280,7 @@ start_notebook_func_schema = {
 
 And again, we'll test it out while specifying the `function_call` argument.
 
-```python cell count=7
+```python cell count=8
 response = openai.ChatCompletion.create(
     messages=[
         {
@@ -295,7 +295,7 @@ response = openai.ChatCompletion.create(
 response_message = response.choices[0]['message'].to_dict_recursive()
 response_message
 ```
-```python cell output count=7
+```python cell output count=8
 {
     'role': 'assistant',
     'content': None,
@@ -307,12 +307,12 @@ response_message
 
 It successfully provided a `file_path`, and even chose to specify a `kernel_name` (even though one wasn't required). If we run the function with the provided arguments, we should see our `file_id` and `kernel_state`:
 
-```python cell count=8
+```python cell count=9
 call_args = json.loads(response_message["function_call"]["arguments"])
 file_kernel = await create_notebook_and_launch_kernel(**call_args)
 file_kernel
 ```
-```python cell output count=8
+```python cell output count=9
 {
     'file_url': 'https://app.noteable.io/f/bcd12345-6789-4abc-d012-3456abcdef90/3D_Scatterplot.ipynb',
     'kernel_state': 'requested'
@@ -342,7 +342,7 @@ Ideally, the conversation should flow like this:
 
 (In a more complicated example with multiple functions, we would probably use a dictionary of `func_name: func` pairs to call the correct function depending on value of the `["function_call"]["name"]` in the response.)
 
-```python cell count=9
+```python cell count=10
 from IPython.display import Markdown, display
 
 
@@ -397,10 +397,10 @@ async def run_conversation(
     
     return await run_conversation(messages=messages)
 ```
-```python cell count=10
+```python cell count=11
 messages = await run_conversation("create a new notebook for making a 3d scatterplot using the plotly python package")
 ```
-<OutputBlock count={10}>
+<OutputBlock count={11}>
 
 Assistant: I have created a new notebook for you to make a 3D scatter plot using the Plotly Python package. You can access the notebook using the following link: [plot_3d_scatterplot.ipynb](https://app.noteable.io/f/6e30c7db-9a80-4bcd-aa0f-9f4dbe46a740/plot_3d_scatterplot.ipynb).
 
@@ -411,7 +411,10 @@ If we go to that link, we see the Notebook was created and the kernel successful
 ![Screenshot of a Noteable Notebook created with arguments provided by the LLM.](part1-created-notebook.png)
 
 And if we examine `messages`, we see each message that was generated during the conversation -- our starting prompt, the first assistant `function_call` response, the system message, and the final assistant text/content response.
-```python cell output
+```python cell count=12
+messages
+```
+```python cell output count=12
 [
     {
         'role': 'user',
@@ -444,4 +447,4 @@ That's it for this part of the series, be sure to check out Part 2 for our next 
 
 Thanks for reading!
 
-![](./papersnake.svg)
+![The Noteable Origami logo, depicting a snake made out of folded paper](./papersnake.svg)
