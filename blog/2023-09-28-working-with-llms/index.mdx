@@ -11,7 +11,11 @@ import shanselman_cgpt from "./shanselman_cgpt.png";
 
 Workers across industries want to work smarter, not harder, and recently people around the world got access to Large Language Models (LLMs, referred to here as “generative AI" or just AI), powerfully smart tools that could help them do just that. But, are they really the magic wand they're made out to be?
 
-[Callout - what's an LLM? Generative AI models produce outputs (text, images, videos, art, voice, code, solve math problems, answers to homework questions, etc.) based on very large training data sets that were used to train the model. What are the tools? https://leaddev.com/tech/11-generative-ai-programming-tools-developers]
+:::tip
+
+//TODO Callout - what's an LLM? Generative AI models produce responses (text, images, videos, art, voice, code, solve math problems, answers to homework questions, etc.) based on very large training data sets that were used to train the model. What are the tools? https://leaddev.com/tech/11-generative-ai-programming-tools-developers
+
+:::
 
 ## The rise of the bots
 
@@ -30,16 +34,16 @@ It's clear the rise of accessible LLMs has been a game-changer for many industri
 >
   “[90% of respondents] said their organizations are using AI in software
   development today or plan to, and 83% said it is essential to implement AI to
-  avoid falling behind.”{" "}
+  avoid falling behind.”
 </blockquote>
 
-Our engineering team at Noteable has been actively using OpenAI since ChatGPT was released, integrating it into various aspects of our product — from building our ChatGPT plugin and cell-level AI error suggestions, to the upcoming AI chatbot in our sidebar - and seeing incredible results. And it’s not just for the product - many of us are exploring AI tools for daily work tasks, personal use, and play. (add links)
+Our engineering team at Noteable has been actively using OpenAI since ChatGPT was released, integrating it into various aspects of our product — from building our ChatGPT plugin and cell-level AI error suggestions, to the upcoming AI chatbot in our sidebar - and seeing incredible results. And it’s not just for the product - many of us are exploring AI tools for daily work tasks, personal use, and play. (add links) In fact genai (the Python package) started July 2022
 
 ## But not the fall of the humans?
 
 Here’s the catch – amidst the buzz about what AI tools can achieve, the critical role of humans in these interactions often takes a backseat. Critics of AI’s capabilities cite the initial ‘crud’, mistakes, and just plain bad code that comes out of LLM tools as a reason they may never be useful, but the reality is more nuanced.
 
-AI _can_ significantly boost productivity, but the human worker remains essential. You can’t just copy and paste AI-generated code onto production and call it a day. From writing concise prompts, to refining outputs, to managing the risks and biases, there is a lot of work to making great things with the help of an LLM.
+AI _can_ significantly boost productivity, but the human worker remains essential. You can’t just copy and paste AI-generated code onto production and call it a day. From writing concise prompts, to refining responses, to managing the risks and biases, there is a lot of work to making great things with the help of an LLM.
 
 As developers who value craftsmanship, we want to ensure our work meets high standards and retains authenticity. But, if AI can do some of the hard, boring, or tedious stuff, let's use it! The goal is to strike a balance, ensuring our work is not just efficient but also authentic and high-quality.
 
@@ -57,13 +61,13 @@ This is especially fun for new projects or new programming languages. Little sid
 
 ### Debugging
 
-Imagine this: You’re on call and there’s an incident - the production application has a bug, but it’s in a part of the codebase you’ve never touched. 🙀 You could spend hours combing the codebase and documentation, or you could send over the context - error message, relevant code, etc - to a code-trained LLM for help. While it probably can’t solve the problem, it can help illuminate the unknown and act as a virtual, interactive rubber duck debug partner in getting to the root cause.
+Imagine this: You’re on call and there’s an incident - the production application has a bug, but it’s in a part of the codebase you’ve never touched. 🙀 You could spend hours combing the codebase and documentation, or you could send over the context - error message, relevant code, etc - to a code-trained LLM for help. While it probably can’t solve the problem, it can help illuminate the unknown and act as a virtual, interactive rubber duck debug partner in getting to the root cause. And it's generally non-judgemental, which is great.
 
-In a less stressful daily scenario, LLM tools in your IDE can help debug small errors and refactor code. GitHub Copilot was designed specifically for this type of task. It uses a programming-specific AI model ([OpenAI Codex](https://openai.com/blog/openai-codex)) that can access your entire codebase, so it has a lot of context about the project.
+In a less stressful daily scenario, LLM tools in your IDE can help debug small errors and refactor code. GitHub Copilot was designed specifically for this type of task. It uses a programming-specific AI model (["beyond" OpenAI Codex according to an announcement in July](https://github.blog/2023-07-28-smarter-more-efficient-coding-github-copilot-goes-beyond-codex-with-improved-ai-model/#:~:text=The%20improved%20AI%20model%20behind,improvement%20over%20the%20previous%20model.) that can access your entire codebase, so it has a lot of context about the project.
 
 ### Explaining unknown code & libraries
 
-Since LMMs are great at summarizing large amounts of text, they're very useful for quickly comprehending a big code block or documentation from a library you're working with. Using these tools to understand unfamiliar code and errors can provide more straight-forward answers than searching online, reducing context switching and conserving mental energy.
+Since LLMs are great at summarizing large amounts of text, they're very useful for quickly comprehending a big code block or documentation from a library you're working with. Using these tools to understand unfamiliar code and errors can provide more straight-forward answers than searching online, reducing context switching and conserving mental energy.
 
 ### Boilerplate code, advanced auto-complete
 
@@ -75,13 +79,13 @@ Engineering-adjacent tasks, especially those that involve writing, are a perfect
 
 ## What must you do for the AI?
 
-Despite their advantages, LLM tools come with plenty of limitations. They're often wrong and require diligent fact-checking, testing, and validation. Treating AI-generated output with scrutiny and asking follow-up questions are essential practices for enhancing the quality of the final product.
+Despite their advantages, LLM tools come with plenty of limitations. They're often wrong and require diligent fact-checking, testing, and validation. Treating AI-generated response with scrutiny and asking follow-up questions are essential practices for enhancing the quality of the final product.
 
 ### Do you really want to use AI for that?
 
-There are still so many unknowns, risks & biases to consider. Many businesses are legitimately concerned about how LLM-powered tools handle important data and have [banned them](https://www.wsj.com/articles/apple-restricts-use-of-chatgpt-joining-other-companies-wary-of-leaks-d44d7d34) from the workplace. Only you & your company policies can answer the question of whether it's appropriate to use these tools at work.
+There are still so many unknowns, risks & biases to consider. Many businesses are legitimately concerned about how LLM-powered tools handle important data and [some have banned them](https://www.wsj.com/articles/apple-restricts-use-of-chatgpt-joining-other-companies-wary-of-leaks-d44d7d34) from the workplace. Only you & your company policies can answer the question of whether it's appropriate to use these tools at work.
 
-We also must consider the cost-benefit ratio of time spent editing & iterating on the LLM output, as well as personal work preferences and abilities. Think about what you like to do, what you’re good at, and whether you even need LLM help in that area. If you're someone who enjoys writing, you may have AI write an outline for a proposal, but fill in the text content yourself. Similarly, the context matters - maybe it's fine for AI to generate an email to an insurance company, but one to a colleague is probably better written by hand so it stays authentic.
+We also must consider the cost-benefit ratio of time spent editing & iterating on the LLM response, as well as personal work preferences and abilities. Think about what you like to do, what you’re good at, and whether you even need LLM help in that area. If you're someone who enjoys writing, you may have AI write an outline for a proposal, but fill in the text content yourself. Similarly, the context matters - maybe it's fine for AI to generate an email to an insurance company, but one to a colleague is probably better written by hand so it stays authentic.
 
 There is also the issue of how much current knowledge you have in the area, since you must be able to critique the outputs. Yes, an LLM might be able to write code faster than you, but it is well-documented how often it's wrong and buggy. You have to be knowledgeable enough to understand and correct the bugs it creates, or, as blogger and Microsoft employee Scott Hanselman tweeted – “Otherwise it will make the code wrong, 10x faster” [[source]](https://x.com/shanselman/status/1613052843652714497?s=20)
 
@@ -104,29 +108,29 @@ Here are some common tips to better prompting:
 - **assign a role or job title**: This helps in limiting the scope and tone of the AI’s responses.
 - **ask it to collaborate**: Instead of telling it to do something, encourage conversation and interations.
 - **set boundaries**: Give it a specific area to focus on, like a specific language or region.
-- **be clear & specific about the output you expect**: Use examples if you have them. If you're writing code you can send along a json schema or type interface to get more accurate results.
-- **ask again a different way or ask for refinements**: Keep the conversation going or keep changing your prompt and note the differences in the outputs. This is a great way to get better results and to learn what makes a good prompt for a specific task.
+- **be clear & specific about the response you expect**: Use examples if you have them. If you're writing code you can send along a json schema or type interface to get more accurate results.
+- **ask again a different way or ask for refinements**: Keep the conversation going or keep changing your prompt and note the differences in the responses. This is a great way to get better results and to learn what makes a good prompt for a specific task.
 
 Here's an example prompt for ChatGPT using these suggestions:
 
 <div style={{ width: "80%", fontFamily: "monospace", margin: "1rem auto" }}>
   “Imagine you’re a software developer with expertise in Javascript (assigning a
   role). Work with me (ask it to collaborate) on coming up with a JSON schema
-  (specifying the output format) for a new e-commerce product catalog. This
+  (specifying the response format) for a new e-commerce product catalog. This
   catalog has a product which has an id, name, price, and optional tags (further
-  limiting the scope & specifying the output). We also need to think of other
+  limiting the scope & specifying the response). We also need to think of other
   fields that might be useful for the catalog.”
 </div>
 
 And [here's how it turned out](https://chat.openai.com/share/6fb3a49a-825a-4ed7-8771-72ef9a263d61) when I tried it.
 
-There are plenty of websites and blogs with advice on prompting. For an academic look, [ExplainPrompt](https://www.explainprompt.com/) explores LLM prompts from recent research papers. [The suggested prompts](https://hbsp.harvard.edu/inspiring-minds/student-use-cases-for-ai) for students by Harvard's Ethan Mollock offer insight into the deep specificity you can add when prompting, and are good starting points for learning new code concepts. If you really want to get into it, DeepLearning.ai offers a [prompt engineering course](https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/) specifically for developers using ChatGPT.
+There are plenty of websites and blogs with advice on prompting. For an academic look, [ExplainPrompt](https://www.explainprompt.com/) explores LLM prompts from recent research papers. [The suggested prompts](https://hbsp.harvard.edu/inspiring-minds/student-use-cases-for-ai) for students by Harvard's Ethan Mollick offer insight into the deep specificity you can add when prompting, and are good starting points for learning new code concepts. If you really want to get into it, DeepLearning.ai offers a [prompt engineering course](https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/) specifically for developers using ChatGPT.
 
-### Scrutinize and iterate on the outputs you get
+### Scrutinize and iterate on the responses you get
 
-The importance of thoroughly reviewing AI-generated output cannot be overstated. Every time you have AI generate significant work for you, there are multiple next steps to edit, validate, clarify, and often ask again. This is where the time-to-output tradeoffs have to be considered. When it comes to written work, it can take a lot of editing to get the results you want.
+The importance of thoroughly reviewing AI-generated response cannot be overstated. Every time you have AI generate significant work for you, there are multiple next steps to edit, validate, clarify, and often ask again. This is where the time-to-polished-product tradeoffs have to be considered. When it comes to written work, it can take a lot of editing to get the results you want.
 
-Your expertise is what will turn a basic LLM output into something great. As Luca Maria Aiello, from the IT University of Copenhagen, puts it: “AI has the potential to provide a significant productivity boost… However, when it comes to fixing, assessing, improving, combining their output or to integrate it into complex projects, expertise is absolutely needed.” [[source]](https://leaddev.com/team/generative-ai-changing-how-computer-science-taught)
+Your expertise is what will turn a basic LLM response into something great. As Luca Maria Aiello, from the IT University of Copenhagen, puts it: “AI has the potential to provide a significant productivity boost… However, when it comes to fixing, assessing, improving, combining the response or to integrate it into complex projects, expertise is absolutely needed.” [[source]](https://leaddev.com/team/generative-ai-changing-how-computer-science-taught)
 
 <blockquote
   style={{
@@ -139,10 +143,10 @@ Your expertise is what will turn a basic LLM output into something great. As Luc
     width: "80%",
   }}
 >
-  Your expertise is what will turn a basic LLM output into something great.
+  Your expertise is what will turn a basic LLM response into something great.
 </blockquote>
 
-When it comes to using AI-generated code, [GitHub's solid advice](https://github.blog/2023-02-22-responsible-ai-pair-programming-with-github-copilot/) (quoted below) is to start with basic understanding and make sure you review, run, and test the generated output.
+When it comes to using AI-generated code, [GitHub's solid advice](https://github.blog/2023-02-22-responsible-ai-pair-programming-with-github-copilot/) (quoted below) is to start with basic understanding and make sure you review, run, and test the generated response.
 
 “So, how do developers know whether GitHub Copilot is generating good or bad code for them? To start, developers using GitHub Copilot should have some basic understanding of the language they are coding in. This will help them determine if the solutions GitHub Copilot suggests are valid. From there, the code should still be run and tested locally. And of course, code reviews should not be skipped!”
 
