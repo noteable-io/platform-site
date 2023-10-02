@@ -221,10 +221,6 @@ from origami.models.api.files import File
 from origami.models.kernels import KernelSession
 
 
-from origami.models.api.files import File
-from origami.models.kernels import KernelSession
-
-
 async def create_notebook_and_launch_kernel(
     file_path: str,
     project_id: Optional[uuid.UUID] = None,
@@ -325,50 +321,6 @@ file_kernel
 
 # Putting it all together
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-The basics are done, and all that's left is to turn it into a convenience function to enable a feedback loop. To do this, we'll build up a `messages` list that includes our first `prompt` string, along with the assistant responses along the way. Here's how it should work:
-
-- The first time we call `run_conversation()`, we'll pass in our starting prompt as a `user` message like we did before.
-- If we get a text/content response, we'll exit the function and return all messages from the conversation.
-- If we get a function call response, we'll execute the function and create a `system` message to add to our `messages` list.
-  - The idea here is that the `system` message will inform the LLM whether or not a file was created and a kernel was started. If all goes well, the LLM should respond with text/content echoing back the file URL and kernel state.
-
-Ideally, the conversation should flow like this:
-
-- Call `run_conversation()` with `prompt`
-  - `User`: "create a new notebook for making a 3d scatterplot using the plotly python package"
-  - `Assistant`: (function call `create_notebook_and_launch_kernel` with `file_path` argument, maybe more)
-  - `<run create_notebook_and_launch_kernel(**args)>`
-  - `System`: "The file was successfully created and a kernel was launched. ..."
-- Call `run_conversation()` again, with `messages`
-  - `Assistant`: "Your file was created at `<file url>` ..." (or some similar successful status message)
-  - `<return>`
-
-(In a more complicated example with multiple functions, we would probably use a dictionary of `func_name: func` pairs to call the correct function depending on value of the `["function_call"]["name"]` in the response.)
-
-```python cell count=10
-from IPython.display import Markdown, display
-
-
-=======
-The basics are done, and all that's left is to clean it up into a convenience function to enable a feedback loop. To do this, we'll build up a `messages` list that includes our first prompt, along with the assistant responses along the way.
-
-```python
-) -> list:
-<<<<<<< HEAD
-    """Run a conversation with a given model, providing either a starting prompt or a list of
-    messages with the `{"role": "user"/"assistant"/"system", "content": "..."}` format.
-    """
-    messages = messages or []
-    if prompt:
-        # start building up `messages` with our first user prompt
-=======
-    """Run a conversation with a given model."""
-    messages = messages or []
-    if prompt:
->>>>>>> 9db12b2 (rework content to save portions for part 2)
-=======
 The basics are done, and all that's left is to turn it into a convenience function to enable a feedback loop. To do this, we'll build up a `messages` list that includes our first `prompt` string, along with the assistant responses along the way. Here's how it should work:
 
 - The first time we call `run_conversation()`, we'll pass in our starting prompt as a `user` message like we did before.
@@ -405,7 +357,6 @@ async def run_conversation(
     messages = messages or []
     if prompt:
         # start building up `messages` with our first user prompt
->>>>>>> 985af3d (more content updates)
         messages.append({"role": "user", "content": prompt})
 
     response = openai.ChatCompletion.create(
@@ -414,46 +365,19 @@ async def run_conversation(
         model=model,
     )
     response_message = response.choices[0]['message'].to_dict_recursive()
-<<<<<<< HEAD
-<<<<<<< HEAD
     # whatever happens here, keep the `assistant` message in the history
-=======
->>>>>>> 9db12b2 (rework content to save portions for part 2)
-=======
-    # whatever happens here, keep the `assistant` message in the history
->>>>>>> 985af3d (more content updates)
     messages.append(response_message)
 
     # since we didn't specify `function_call={"name": "create_notebook_and_launch_kernel"}`, we need
     # to check if the response has a function call or if it's just a content string
     if "function_call" not in response_message.keys():
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 3bd81d0 (use OutputBlock and fix markdown display)
         # we got a text/content response; display it as markdown for easy viewing, then exit cleanly
         display(
             Markdown(f"Assistant: {response_message['content']}")
         )
-<<<<<<< HEAD
         return messages
 
     # time to parse the args and call our function!
-=======
-        print(f"Assistant: {response_message["content"]}")
-        return messages
-
->>>>>>> 9db12b2 (rework content to save portions for part 2)
-=======
-        # we got a text/content response; print it out for easy viewing and exit cleanly
-        print(f"Assistant: {response_message["content"]}")
-=======
->>>>>>> 3bd81d0 (use OutputBlock and fix markdown display)
-        return messages
-
-    # time to parse the args and call our function!
->>>>>>> 985af3d (more content updates)
     call_args = json.loads(response_message["function_call"]["arguments"])
     try:
         file_kernel: dict = await create_notebook_and_launch_kernel(**call_args)
@@ -463,28 +387,17 @@ async def run_conversation(
             f"File URL: `{file_kernel['file_url']}`"
         )
     except Exception as e:
-<<<<<<< HEAD
-<<<<<<< HEAD
         # if something goes wrong here, make sure we inform the LLM and it can either echo back an
         # error state or attempt to self-correct
-=======
->>>>>>> 9db12b2 (rework content to save portions for part 2)
-=======
-        # if something goes wrong here, make sure we inform the LLM and it can either echo back an
-        # error state or attempt to self-correct
->>>>>>> 985af3d (more content updates)
         system_message = f"Problem creating a file or starting a kernel session: `{e}`"
 
     # add a system message to the conversation to let the assistant know that the kernel session was
     # created, along with its current execution state
-<<<<<<< HEAD
-<<<<<<< HEAD
     messages.append({"role": "system", "content": system_message})
     
     return await run_conversation(messages=messages)
 ```
 ```python cell count=11
-<<<<<<< HEAD
 messages = await run_conversation("create a new notebook for making a 3d scatterplot using the plotly python package")
 ```
 <OutputBlock count={11}>
@@ -502,44 +415,6 @@ And if we examine `messages`, we see each message that was generated during the 
 messages
 ```
 ```python cell output count=12
-=======
-    messages.append(
-        {
-            "role": "system",
-            "content": system_message,
-        }
-    )
-=======
-    messages.append({"role": "system", "content": system_message})
-    
->>>>>>> 985af3d (more content updates)
-    return await run_conversation(messages=messages)
-```
-```python cell count=10
-=======
->>>>>>> b9b36d0 (adjust cell counts and alt text)
-messages = await run_conversation("create a new notebook for making a 3d scatterplot using the plotly python package")
-```
-<OutputBlock count={11}>
-
-Assistant: I have created a new notebook for you to make a 3D scatter plot using the Plotly Python package. You can access the notebook using the following link: [plot_3d_scatterplot.ipynb](https://app.noteable.io/f/6e30c7db-9a80-4bcd-aa0f-9f4dbe46a740/plot_3d_scatterplot.ipynb).
-
-</OutputBlock>
-
-If we go to that link, we see the Notebook was created and the kernel successfully launched. 🎉
-
-![Screenshot of a Noteable Notebook created with arguments provided by the LLM.](part1-created-notebook.png)
-
-And if we examine `messages`, we see each message that was generated during the conversation -- our starting prompt, the first assistant `function_call` response, the system message, and the final assistant text/content response.
-<<<<<<< HEAD
-```python cell output
->>>>>>> 9db12b2 (rework content to save portions for part 2)
-=======
-```python cell count=12
-messages
-```
-```python cell output count=12
->>>>>>> b9b36d0 (adjust cell counts and alt text)
 [
     {
         'role': 'user',
@@ -566,31 +441,10 @@ messages
 
 # Recap
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 In this post, we touched on the OpenAI plugins and how to mimic similar behavior with OpenAI's function calling API, wrote some basic function schemas, and got our feet wet with the `origami` package by creating a notebook and starting a kernel using arguments provided by the LLM responses.
-=======
-In this post, we touched on the OpenAI plugins and how to mimic similar behavior with OpenAI's function calling API, wrote some basic function schemas, and got our feet wet with the `origami` package by creating a notebook and starting a kernel using
->>>>>>> 985af3d (more content updates)
-=======
-In this post, we touched on the OpenAI plugins and how to mimic similar behavior with OpenAI's function calling API, wrote some basic function schemas, and got our feet wet with the `origami` package by creating a notebook and starting a kernel using arguments provided by the LLM responses.
->>>>>>> 3eb98da (finish the sentence)
 
 That's it for this part of the series, be sure to check out Part 2 for our next steps where we build on the lessons learned here.  We'll dive into creating more function schemas with the `origami` package to add cell content to our notebook, execute code, and retrieve outputs.
 
 Thanks for reading!
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 ![The Noteable Origami logo, depicting a snake made out of folded paper](./papersnake.svg)
-=======
-
-Check out Part 2 for our next steps -- adding cell content, executing code, and retrieving outputs!
->>>>>>> 9db12b2 (rework content to save portions for part 2)
-=======
-![](./papersnake.svg)
->>>>>>> 985af3d (more content updates)
-=======
-![The Noteable Origami logo, depicting a snake made out of folded paper](./papersnake.svg)
->>>>>>> b9b36d0 (adjust cell counts and alt text)
