@@ -20,3 +20,9 @@ ana:
   name: Ana Rodriguez
   title: Senior Devops Engineer @ Noteable
   image_url: https://github.com/ana-rod.png
+
+shoup:
+  name: Dave Shoup
+  title: Senior Software Engineer @ Noteable
+  url: https://twitter.com/shouples
+  image_url: https://github.com/shouples.png
