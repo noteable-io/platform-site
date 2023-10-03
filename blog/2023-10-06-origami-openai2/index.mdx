@@ -20,7 +20,7 @@ import { OutputBlock } from "@site/src/components/cell";
 
 ## Next Steps
 
-In [Part 1](../2023-09-28-origami-openai/index.mdx), we went through a brief example of using the OpenAI function calling API to come up with arguments to our `create_notebook_and_launch_kernel` function, which let our specified model pick the name of the Notebook file, and optionally provide a kernel name and hardware size. That helped establish a basic understanding of the pieces at play, but didn't _really_ show the power of the function calling API.
+In [Part 1](../2023-10-05-origami-openai/index.mdx), we went through a brief example of using the OpenAI function calling API to come up with arguments to our `create_notebook_and_launch_kernel` function, which let our specified model pick the name of the Notebook file, and optionally provide a kernel name and hardware size. That helped establish a basic understanding of the pieces at play, but didn't _really_ show the power of the function calling API.
 
 This time, we'll add more functions into the mix while keeping the same feedback loop through a conversation function. The main functionality we're going to expose to the large language model (LLM) this time focus around molding the body of the Notebook itself -- the code and markdown cells, along with any outputs from executed code.
 
@@ -36,7 +36,7 @@ Make sure our required packages are available:
 `tiktoken` is new here; since we expect more function calls to be made, we may end up going over the 4096-token limit that OpenAI enforces. We'll set a soft limit of 4000 tokens for testing, but depending on the model you use, you can bump that number up even higher. In any case, it's a good idea to keep track of the tokens you're using before sending requests (from both a cost/usage perspective, as well as to avoid hitting the limit part-way through a chain of requests).
 :::
 
-For the sake of simplicity, we'll be working in a single Notebook for the duration of this post, but you can experiment with including that same `start_notebook_func_schema` function schema from [Part 1](../2023-09-28-origami-openai/index.mdx#example-with-origami) in your own environment if you want to see how the LLM does with working across multiple Notebooks!
+For the sake of simplicity, we'll be working in a single Notebook for the duration of this post, but you can experiment with including that same `start_notebook_func_schema` function schema from [Part 1](../2023-10-05-origami-openai/index.mdx#example-with-origami) in your own environment if you want to see how the LLM does with working across multiple Notebooks!
 
 The function below should look familiar, but with the additions of setting a global `DEFAULT_PROJECT_ID` and returning a `file_id` in the response, which we'll need to provide for the new functionality further down.
 
@@ -440,7 +440,7 @@ delete_cell_func_schema = {
 ```
 
 ## Putting it all together (again)
-Just like in [Part 1](../2023-09-28-origami-openai/index.mdx#putting-it-all-together), we'll make a `run_conversation()` function that provides a feedback loop -- we provide the initial prompt or list of messages, get the response from OpenAI, and decide whether we make a function call or return with a content response.
+Just like in [Part 1](../2023-10-05-origami-openai/index.mdx#putting-it-all-together), we'll make a `run_conversation()` function that provides a feedback loop -- we provide the initial prompt or list of messages, get the response from OpenAI, and decide whether we make a function call or return with a content response.
 
 One noteworthy addition below is that we're checking token counts before making requests. Since we're increasing the likelihood of continuously calling `run_conversation` with an updated list of `messages`, we'll slowly build up the length of context we submit as a request.
 
@@ -589,7 +589,7 @@ Token count: 319
 
 Assistant: {'name': 'execute_code_cell', 'arguments': '{\n "file_id": "cbc69c43-89a3-4b39-810e-2ee15119f9eb",\n "cell_id": "87a26214-b243-4d80-ac52-607dbd51f0a4"\n}'}
 
-System: execute_code_cell ran successfully and returned: {'cell_id': '87a26214-b243-4d80-ac52-607dbd51f0a4', 'source': 'from datetime import datetime\nprint(datetime.now())', 'cell_type': 'code', 'outputs': [{'raw': '2023-10-03 16:37:57.057048\n', 'mimetype': 'text/plain'}], 'cell_state': 'finished_with_no_error'}
+System: execute_code_cell ran successfully and returned: {'cell_id': '87a26214-b243-4d80-ac52-607dbd51f0a4', 'source': 'from datetime import datetime\nprint(datetime.now())', 'cell_type': 'code', 'outputs': [{'raw': '2023-10-05 16:37:57.057048\n', 'mimetype': 'text/plain'}], 'cell_state': 'finished_with_no_error'}
 
 Token count: 526
 
@@ -651,7 +651,7 @@ And the final message:
 
 Assistant: The outputs of your code are as follows:
 
-1. The current date and time is: 2023-10-03 16:37:57.057048
+1. The current date and time is: 2023-10-05 16:37:57.057048
 
 2. The plot of the sine function from 0 to 2pi is shown below:
 
@@ -710,7 +710,7 @@ messages
     },
     {
         'role': 'system',
-        'content': "`execute_code_cell` ran successfully and returned: `{'cell_id': '87a26214-b243-4d80-ac52-607dbd51f0a4', 'source': from datetime import datetime\\nprint(datetime.now())', 'cell_type': 'code', 'outputs': [{'raw': '2023-10-03 16:37:57.057048\\n', 'mimetype': 'text/plain'}], 'cell_state': 'finished_with_no_error'}`"
+        'content': "`execute_code_cell` ran successfully and returned: `{'cell_id': '87a26214-b243-4d80-ac52-607dbd51f0a4', 'source': from datetime import datetime\\nprint(datetime.now())', 'cell_type': 'code', 'outputs': [{'raw': '2023-10-05 16:37:57.057048\\n', 'mimetype': 'text/plain'}], 'cell_state': 'finished_with_no_error'}`"
     },
     {
         'role': 'assistant',
@@ -807,7 +807,7 @@ messages
     },
     {
         'role': 'assistant',
-        'content': 'The outputs of your code are as follows:\n\n1. The current date and time is: 2023-10-03 16:37:57.057048\n\n2. The plot of the sine function from 0 to 2pi is shown below:\n\n    [![Sine function](attachment:image.png)]()\n\n3. The first 20 numbers in the fibonacci sequence are: [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181]'
+        'content': 'The outputs of your code are as follows:\n\n1. The current date and time is: 2023-10-05 16:37:57.057048\n\n2. The plot of the sine function from 0 to 2pi is shown below:\n\n    [![Sine function](attachment:image.png)]()\n\n3. The first 20 numbers in the fibonacci sequence are: [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181]'
     }
 ]
 ```
