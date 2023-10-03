@@ -252,7 +252,7 @@ async def create_notebook_and_launch_kernel(
         'kernel_state': kernel_session.kernel.execution_state,
     }
 ```
-(For the time being, we're only returning the Notebook's URL and the state of the kernel to pass as context back to the LLM in cells further down.)
+For the time being, we're only returning the Notebook's URL and the state of the kernel to pass as context back to the LLM in cells further down.
 
 Using the function above for reference, we can create its function schema like how we did for `test_func` above. In this case, adding `description` properties to each argument is helpful context for the LLM.
 
