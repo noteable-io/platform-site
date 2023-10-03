@@ -13,10 +13,12 @@ tags:
     python,
     function calling,
   ]
+toc_min_heading_level: 2
+toc_max_heading_level: 5
 ---
 import { OutputBlock } from "@site/src/components/cell";
 
-# Background
+## Background
 
 When [ChatGPT](https://chat.openai.com/) burst onto the tech scene, it didn't just nudge the boundaries of conversational AI – it blew right past them. The digital landscape, already well-acquainted with the incremental wonders of technology, found itself in the throes of another revolution. But OpenAI didn’t stop there. By introducing access to [plugins](https://openai.com/blog/chatgpt-plugins), it allowed ChatGPT to seamlessly take user prompts and meld them with other services' APIs. This was not just another feature; it was a gateway to endless integrations and applications.
 
@@ -30,7 +32,7 @@ What set the Noteable plugin apart from other plugins was its ability to transfo
 
 Yet, as powerful as ChatGPT plugins are, they come with their own limitations. They operate separately from the OpenAI API and, for the time being, are tied exclusively to the GPT-4 model. This naturally prompts users to contemplate the potential of wider avenues beyond a single model or user interface.
 
-# Interacting with the Noteable API with OpenAI's function calling API
+## Interacting with the Noteable API with OpenAI's function calling API
 
 For the curious minds and the restless tinkerers, this post is for you. Let's embark on a journey to uncover how to interface with the Noteable API using its foundational Python package, `origami`, while also leveraging the power of OpenAI's function calling API.
 
@@ -40,7 +42,7 @@ Feel free to look at the OpenAI [function calling docs](https://platform.openai.
 
 At a high level, the OpenAI function calling API allows users or services to expose functionality to a large language model (LLM), so when a prompt is sent, the LLM can respond with a suggestion to call on that exposed functionality. It does **not** allow the LLM call function(s) directly.
 
-## Install Dependencies
+### Install Dependencies
 
 To get started, we first need to install some packages into our Python environment:
 + [`noteable-origami`](https://noteable-io.github.io/origami/quickstart/)
@@ -55,14 +57,14 @@ Or in a terminal:
 pip install noteable-origami openai
 ```
 
-## Authentication
+### Authentication
 We'll need both [`OPENAI_API_KEY`](https://platform.openai.com/docs/libraries/python-library) as well as [`NOTEABLE_TOKEN`](https://noteable-io.github.io/origami/quickstart/#api-tokens) as environment variables in order to authenticate to both services.
 
 :::tip
 If you're using [Noteable](https://app.noteable.io) as your Python environment of choice, you can create [Secrets](https://docs.noteable.io/product-docs/collaborate/access-and-visibility/secrets-permissions) for both of these, and they will be available as environment variables while executing code cells.
 :::
 
-## Function Calling Setup
+### Function Calling Setup
 
 To enable OpenAI's function calling API to use `origami` functions, we'll need to outline a few key steps:
 - generating JSON schemas for functions
@@ -212,6 +214,8 @@ project_id
 UUID('a1b2c3d4-e5f6-4a7b-8123-abcdef123456')
 ```
 
+#### Creating a Notebook & Launching a Kernel
+
 Alright, onto creating our new Notebook-creating function.
 
 ```python cell count=6
@@ -319,7 +323,7 @@ file_kernel
 }
 ```
 
-# Putting it all together
+## Putting it all together
 
 The basics are done, and all that's left is to turn it into a convenience function to enable a feedback loop. To do this, we'll build up a `messages` list that includes our first `prompt` string, along with the assistant responses along the way. Here's how it should work:
 
@@ -439,7 +443,7 @@ messages
 ]
 ```
 
-# Recap
+## Recap
 
 In this post, we touched on the OpenAI plugins and how to mimic similar behavior with OpenAI's function calling API, wrote some basic function schemas, and got our feet wet with the `origami` package by creating a notebook and starting a kernel using arguments provided by the LLM responses.
 
