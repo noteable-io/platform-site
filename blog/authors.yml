@@ -25,3 +25,9 @@ noel:
   name: Noel Cothren
   title: Senior UI Engineer @ Noteable
   image_url: https://github.com/noeldevelops.png
+
+shoup:
+  name: Dave Shoup
+  title: Senior Software Engineer @ Noteable
+  url: https://twitter.com/shouples
+  image_url: https://github.com/shouples.png
