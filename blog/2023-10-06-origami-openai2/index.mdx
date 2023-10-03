@@ -36,11 +36,13 @@ Make sure our required packages are available:
 `tiktoken` is new here; since we expect more function calls to be made, we may end up going over the 4096-token limit that OpenAI enforces. We'll set a soft limit of 4000 tokens for testing, but depending on the model you use, you can bump that number up even higher. In any case, it's a good idea to keep track of the tokens you're using before sending requests (from both a cost/usage perspective, as well as to avoid hitting the limit part-way through a chain of requests).
 :::
 
-For the sake of simplicity, we'll be working in a single Notebook for the duration of this post, but you can experiment with including that same `start_notebook_func_schema` function schema from [Part 1](../2023-10-05-origami-openai/index.mdx#example-with-origami) in your own environment if you want to see how the LLM does with working across multiple Notebooks!
+### Creating a Notebook & Launching a Kernel
+
+For the sake of simplicity, we'll be working in a single Notebook for the duration of this post, but you can experiment with including that same `start_notebook_func_schema` function schema from [Part 1](../2023-10-05-origami-openai/index.mdx#example-with-origami) in your own environment if you want to see how the LLM does with working across multiple Notebooks.
 
 The function below should look familiar, but with the additions of setting a global `DEFAULT_PROJECT_ID` and returning a `file_id` in the response, which we'll need to provide for the new functionality further down.
 
-```python cell
+```python cell count=1
 import uuid
 from typing import Optional
 
@@ -78,7 +80,6 @@ async def create_notebook_and_launch_kernel(
         'file_url': file.url,
         'kernel_state': kernel_session.kernel.execution_state,
         # highlight-start
-        # this part is new:
         'file_id': file.id,
         # highlight-end
     }
@@ -107,7 +108,7 @@ Before we get anywhere in a Notebook, we need content. Whether it's documentatio
 
 ### Adding Cells & Content
 
-```python cell
+```python cell count=2
 import asyncio
 from typing import Literal
 
@@ -156,7 +157,7 @@ async def add_cell_to_notebook(
 ```
 
 And our schema -- most of this structure should look similar to the schemas we made in Part 1, with the addition of the `enum` property for `cell_type`. This will tell the LLM that only two values should be used here: `code` and `markdown`. We're also providing optional `after_cell_id` and `before_cell_id` arguments to allow the LLM to place cells before or after existing cells.
-```python cell
+```python cell count=3
 add_cell_func_schema = {
     'name': 'add_cell_to_notebook',
     'description': 'Add a Code or Markdown cell to a Notebook file with source content.',
@@ -199,7 +200,7 @@ This one is a bit more involved since there are some extra steps we want to take
 
 We're also going to add some convenience functions for our own use to handle things like cleaning the ANSI escape codes out of colored traceback strings, as well as summarizing a cell and its outputs. (There are a lot of properties between the cell, the outputs, and output contents; we only want to provide a sample of the most important ones for our testing.)
 
-```python cell
+```python cell count=4
 import json
 import re
 
@@ -279,7 +280,7 @@ async def execute_code_cell(
     return cell_summary
 ```
 
-```python cell
+```python cell count=5
 execute_code_func_schema = {
     'name': 'execute_code_cell',
     'description': 'Execute a Code cell in a Notebook.',
@@ -316,7 +317,7 @@ Take this all with a grain of salt; the model may not choose to use these next f
 :::
 
 #### Get Cells
-```python cell
+```python cell count=6
 async def get_cells(
     file_id: uuid.UUID,
     cell_ids: Optional[list[str]] = None,
@@ -339,8 +340,10 @@ async def get_cells(
     )
     return cell_summaries
 ```
-This function schema is also a bit different than all others we've covered; here, we introduce an `array` type that indicates we're expecting a list of strings for the optional `cell_ids` argument..
-```python cell
+
+This function schema is also a bit different than all others we've covered; here, we introduce an `array` type that indicates we're expecting a list of strings for the optional `cell_ids` argument.
+
+```python cell count=7
 get_cells_func_schema = {
     'name': 'get_cells',
     'description': 'Get all (or a list of) cells from a Notebook file.',
@@ -368,7 +371,8 @@ get_cells_func_schema = {
 
 #### Replace Cell Contents
 We could also go with the `RTUClient`'s `update_cell_content` method here, but that requires providing a `diff-match-patch` style patch string. In practice, we've noticed LLMs have trouble consistently getting that formatting correct, so we're going with a full content replacement strategy here to be on the safe side.
-```python cell
+
+```python cell count=8
 async def replace_cell_content(
     file_id: uuid.UUID,
     cell_id: str,
@@ -406,7 +410,7 @@ replace_cell_content_func_schema = {
 ```
 
 #### Delete Cell
-```python cell
+```python cell count=9
 async def delete_cell(
     file_id: uuid.UUID,
     cell_id: str,
@@ -446,7 +450,7 @@ One noteworthy addition below is that we're checking token counts before making 
 
 Note that we check to make sure the function call `name` is a valid function name before pulling its associated function out of `func_names_to_funcs`.
 
-```python cell
+```python cell count=10
 import json
 import openai
 import tiktoken
@@ -553,13 +557,19 @@ async def run_conversation(
 
 Instead of starting with just a prompt, let's lead with a system message that provides some ground rules for the LLM. We'll also enable the new `show_all_messages` argument to keep an eye on what functions the LLM chooses to run, and watch for any potential situations where it gets stuck.
 
-```python cell
-# if you aren't providing a function schema for `create_notebook_and_launch_kernel()`, make sure you
-# have a file ID ready to use here; otherwise, un-comment these two lines:
+:::caution warning
 
-# created_file = await create_notebook_and_launch_kernel("OrigamiLLM2.ipynb")
-# file_id = created_file['file_id']
+If you aren't providing a function schema for `create_notebook_and_launch_kernel()`, make sure you have a `file_id` ready to use here; otherwise, run these two lines before moving on:
 
+```python
+# change the file name/path as needed
+created_file = await create_notebook_and_launch_kernel("OrigamiLLM2.ipynb")
+file_id = created_file['file_id']
+```
+
+:::
+
+```python cell count=11
 messages = await run_conversation(
     messages=[
         {
@@ -647,7 +657,7 @@ Token count: 2518
 </details>
 
 And the final message:
-<OutputBlock>
+<OutputBlock count={11}>
 
 Assistant: The outputs of your code are as follows:
 
@@ -655,7 +665,7 @@ Assistant: The outputs of your code are as follows:
 
 2. The plot of the sine function from 0 to 2pi is shown below:
 
-`<invalid markdown image>`
+`<invalid markdown image link>`
 
 3. The first 20 numbers in the fibonacci sequence are: [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181]
 
@@ -672,13 +682,13 @@ In this particular run, it didn't replace any cell contents or have to look up t
 
 And finally, let's look over all the messages generated during this conversation.
 
-```python cell
+```python cell count=12
 messages
 ```
 <details>
 <summary>Click to see the full output of `messages`</summary>
 
-```python cell output
+```python cell output count=12
 [
     {
         'role': 'user',
@@ -815,7 +825,12 @@ messages
 
 And the final Notebook -- (note the execution count for the sine wave plot cell):
 
-![](./final-notebook1.png)
+![A screenshot of a Noteable notebook with three executed code cells, showing the date and time, a sine wave plot, and numbers in a fibonacci sequence.](./final-notebook1.png "A screenshot of a Noteable notebook with three executed code cells, showing the date and time, a sine wave plot, and numbers in a fibonacci sequence.")
 
 ## Recap
 
+Continuing from Part 1, we dove further into the function calling API, crafting more function calls and schemas. To make our lives a bit easier, we introduced some handy convenience functions to use between these new function wrappers. We also slightly upgraded our `run_conversation()` function to use multiple functions and let us keep an eye on the flow of the conversation.
+
+Keep an eye out for Part 3, where we'll take the lessons learned in the Part 1 post as well as this post, and go even further, pulling in the `chatlab` package and the Noteable Plugin OpenAPI spec to expose additional functionality.
+
+Thanks for sticking around! Experiment, share your discoveries, and let's keep innovating. Happy coding!
