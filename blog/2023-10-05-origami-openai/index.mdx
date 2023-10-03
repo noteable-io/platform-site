@@ -399,7 +399,7 @@ async def run_conversation(
     # created, along with its current execution state
     messages.append({"role": "system", "content": system_message})
     
-    return await run_conversation(messages=messages)
+    return await run_conversation(messages=messages, model=model)
 ```
 ```python cell count=11
 messages = await run_conversation("create a new notebook for making a 3d scatterplot using the plotly python package")
