@@ -30,3 +30,18 @@
   --ifm-color-primary-lightest: #00f5f5;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+.pull-quote {
+  font-size: 1.25em;
+  font-style: italic;
+  margin: 20px 40px;
+  padding: 10px;
+  border-left: none;
+  color: #555;
+  width: 80%;
+}
+
+.blockquote-commentary {
+  font-size: 0.8em;
+  font-style: italic;
+}
