@@ -24,9 +24,11 @@ If you'd like to skip straight to the action, check out the [Notebook](https://a
 
 :::
 
+Let's embark on a journey to uncover how to interface with the Noteable API using its foundational Python package, `origami`, while also leveraging the power of OpenAI's function calling API. For those acquainted with the Noteable ChatGPT plugin, you'll not only gain direct access to the features you've already explored but also uncover functionality that only `origami` and the Noteable API can offer, such as customizing which operations are made available, but also how those operations are described to the Large Language Models (LLMs). Whether you're a veteran user or just getting started, there's a world of possibilities waiting to be discovered.
+
 ## Background
 
-When [ChatGPT](https://chat.openai.com/) burst onto the tech scene, it didn't just nudge the boundaries of conversational AI – it blew right past them. The digital landscape, already well-acquainted with the incremental wonders of technology, found itself in the throes of another revolution. But OpenAI didn’t stop there. By introducing access to [plugins](https://openai.com/blog/chatgpt-plugins), it allowed ChatGPT to seamlessly take user prompts and meld them with other services' APIs. This was not just another feature; it was a gateway to endless integrations and applications.
+When [ChatGPT](https://chat.openai.com/) burst onto the tech scene, it didn't just nudge the boundaries of conversational AI – it blew right past them. The tech community, accustomed to continuous innovations and breakthroughs, suddenly found itself in the throes of another groundbreaking revolution. But OpenAI didn’t stop there. By introducing access to [plugins](https://openai.com/blog/chatgpt-plugins), it allowed ChatGPT to take user prompts and meld them with other services' APIs. This was not just another feature; it was a gateway to endless integrations and applications.
 
 By early May 2023, Noteable released its own ChatGPT plugin, and almost instantly, the plugin became the go-to tool for those with an itch for data analysis. 
 
@@ -36,17 +38,15 @@ What set the Noteable plugin apart from other plugins was its ability to transfo
 
 ![A conversation with ChatGPT using the Noteable plugin (left), working through data analysis of data from the Spotify API, shown in a Noteable notebook (right).](./chatgpt-noteable.png "A conversation with ChatGPT using the Noteable plugin (left), working through data analysis of data from the Spotify API, shown in a Noteable notebook (right).")
 
-As powerful as ChatGPT Plugins are, they have their own limitations. Our own design of the plugin is limited by what we can expose to the broad user base of ChatGPT users. You, however, are not limited if you're working with the API directly.
+As powerful as ChatGPT Plugins are, they have their own limitations. Our own design of the plugin is limited by what we can expose to the broad user base of ChatGPT users. The Noteable plugin is a one-size-fits-all set of operations and descriptions that ChatGPT uses to drive Noteable Notebooks. You, however, are not limited by this set and can leverage a wider range of operations and customizations through the combination of `origami` and the function calling API. For the curious minds and the restless tinkerers, this post is for you.
 
 ## Interacting with the Noteable API with OpenAI's function calling API
 
-For the curious minds and the restless tinkerers, this post is for you. Let's embark on a journey to uncover how to interface with the Noteable API using its foundational Python package, `origami`, while also leveraging the power of OpenAI's function calling API.
+At a high level, the OpenAI function calling API allows users or services to expose functionality to a LLM, so when a prompt is sent, the LLM can respond with a suggestion to call on that exposed functionality. It does **not** allow the LLM call function(s) directly.
 
 :::note
 Feel free to look at the OpenAI [function calling docs](https://platform.openai.com/docs/guides/gpt/function-calling) for reference as we move along.
 :::
-
-At a high level, the OpenAI function calling API allows users or services to expose functionality to a large language model (LLM), so when a prompt is sent, the LLM can respond with a suggestion to call on that exposed functionality. It does **not** allow the LLM call function(s) directly.
 
 ### Install Dependencies
 
