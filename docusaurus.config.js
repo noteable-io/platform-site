@@ -163,7 +163,21 @@ const config = {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
       },
+      zoom: {
+        selector: '.markdown :not(em) > img',
+        background: {
+          light: 'rgb(255, 255, 255, 0.9)',
+          dark: 'rgb(30, 30, 30, 0.9)'
+        },
+        config: {
+          // options you can specify via https://github.com/francoischalifour/medium-zoom#usage
+        }
+      }
     }),
+
+  plugins: [
+    require.resolve('docusaurus-plugin-image-zoom')
+  ],
 };
 
 module.exports = config;
