@@ -1,6 +1,6 @@
 ---
 slug: origami-openai-part2
-title: "Noteable and LLMs, Part 2: Extended Function Calling with Origami"
+title: "OpenAI Function Calling: Unleashing the Notebook Agent"
 authors: [shoup]
 description: "foobar"
 tags:
@@ -681,12 +681,12 @@ While this process was running, I had the targeted Notebook open in another tab,
 - adding and executing a cell to display the current date and time ran with no problem
 - adding sine wave plot syntax was fine, but during execution, we ran into a `ModuleNotFoundError`
   - after seeing this, the LLM created a new cell to install the required packages with `!pip install matplotlib numpy -q` and executed it without issue
-  - it then deleted the `pip install` cell and re-executed the cell the plot the sine wave, which ran successfully and produced a matplotlib image output
+  - it then deleted the `pip install` cell and re-executed the cell to plot the sine wave, which ran successfully and produced a matplotlib image output
 - it continued on by successfully adding and executing the fibonacci sequence
 
 In this particular run, it didn't replace any cell contents or have to look up the existing cells in the Notebook, but that's alright.
 
-And finally, let's look over all the messages generated during this conversation.
+The full breakdown can be found in the list of messages generated during the conversation. You could stop here, or you could feed in more messages, continue the conversation, and see where the LLM takes you (and your Notebook)!
 
 ```python cell count=12
 messages
@@ -829,7 +829,7 @@ messages
 ```
 </details>
 
-And the final Notebook -- (note the execution count for the sine wave plot cell):
+And the final Notebook -- note the execution count for the sine wave plot cell:
 
 ![A screenshot of a Noteable notebook with three executed code cells, showing the date and time, a sine wave plot, and numbers in a fibonacci sequence.](./final-notebook1.png "A screenshot of a Noteable notebook with three executed code cells, showing the date and time, a sine wave plot, and numbers in a fibonacci sequence.")
 
@@ -837,6 +837,6 @@ And the final Notebook -- (note the execution count for the sine wave plot cell)
 
 Continuing from Part 1, we dove further into the function calling API, crafting more function calls and schemas. To make our lives a bit easier, we introduced some handy convenience functions to use between these new function wrappers. We also slightly upgraded our `run_conversation()` function to use multiple functions and let us keep an eye on the flow of the conversation.
 
-Keep an eye out for Part 3, where we'll take the lessons learned in the Part 1 post as well as this post, and go even further, pulling in the `chatlab` package and the Noteable Plugin OpenAPI spec to expose additional functionality.
+Keep an eye out for Part 3, where we'll take the lessons learned in these last two posts and go even further, pulling in the `chatlab` package and the Noteable Plugin's OpenAPI spec to expose additional functionality.
 
 Thanks for sticking around! Experiment, share your discoveries, and let's keep innovating. Happy coding!
