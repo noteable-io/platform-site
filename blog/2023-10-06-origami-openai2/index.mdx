@@ -561,7 +561,7 @@ async def run_conversation(
     )
 ```
 
-Instead of starting with just a prompt, let's lead with a system message that provides some ground rules for the LLM. We'll also enable the new `show_all_messages` argument to keep an eye on what functions the LLM chooses to run, and watch for any potential situations where it gets stuck.
+Instead of starting with just a prompt, let's lead with a system message that provides some ground rules for the LLM. We'll also enable the new `show_all_messages` argument to watch what functions the LLM chooses to run, and watch for any potential situations where it gets stuck.
 
 :::caution warning
 
@@ -835,7 +835,7 @@ And the final Notebook -- note the execution count for the sine wave plot cell:
 
 ## Recap
 
-Continuing from Part 1, we dove further into the function calling API, crafting more function calls and schemas. To make our lives a bit easier, we introduced some handy convenience functions to use between these new function wrappers. We also slightly upgraded our `run_conversation()` function to use multiple functions and let us keep an eye on the flow of the conversation.
+Continuing from Part 1, we dove further into the function calling API, crafting more function calls and schemas. To make our lives a bit easier, we introduced some handy convenience functions to use between these new function wrappers. We also slightly upgraded our `run_conversation()` function to handle multiple function schemas and allow us to monitor on the flow of the conversation.
 
 Keep an eye out for Part 3, where we'll take the lessons learned in these last two posts and go even further, pulling in the `chatlab` package and the Noteable Plugin's OpenAPI spec to expose additional functionality.
 
