@@ -26,15 +26,22 @@ pip install noteable-origami
 
 ```python
 import os
+import asyncio
 from origami.clients.api import APIClient
 
-api_client = APIClient()
-project_id = user.origamist_default_project_id
+async def main():
+    api_client = APIClient()
 
-file = await api_client.create_notebook(
-    project_id=project_id,
-    path="Origami Demo.ipynb"
-)
-file
+    user = await api_client.user_info()
+    project_id = user.origamist_default_project_id
+
+    file = await api_client.create_notebook(
+        project_id=project_id,
+        path="Origami Demo.ipynb"
+    )
+    print(file)
+
+if __name__ == "__main__":
+    asyncio.run(main())
 ```
 
