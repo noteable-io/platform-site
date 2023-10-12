@@ -45,13 +45,9 @@ const config = {
       "classic",
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
-        // docs: {
-        //   sidebarPath: require.resolve("./sidebars.js"),
-        //   // Please change this to your repo.
-        //   // Remove this to remove the "edit this page" links.
-        //   editUrl:
-        //     "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
-        // },
+        docs: {
+          sidebarPath: require.resolve("./sidebars.js"),
+        },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
@@ -83,12 +79,12 @@ const config = {
           src: "img/logo.svg",
         },
         items: [
-          // {
-          //   type: "docSidebar",
-          //   sidebarId: "tutorialSidebar",
-          //   position: "left",
-          //   label: "Tutorial",
-          // },
+          {
+            type: "docSidebar",
+            sidebarId: "docSidebar",
+            position: "left",
+            label: "Docs",
+          },
           { to: "/blog", label: "Blog", position: "left" },
           {
             href: "https://github.com/noteable-io",
@@ -100,15 +96,15 @@ const config = {
       footer: {
         style: "dark",
         links: [
-          // {
-          //   title: "Docs",
-          //   items: [
-          //     {
-          //       label: "Tutorial",
-          //       to: "/docs/intro",
-          //     },
-          //   ],
-          // },
+          {
+            title: "Docs",
+            items: [
+              {
+                label: "Introduction",
+                to: "/docs/intro",
+              },
+            ],
+          },
           {
             title: "Community",
             items: [
