@@ -67,6 +67,33 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      algolia: {
+        // The application ID provided by Algolia
+        appId: "00JXOQ2DJ1",
+
+        // Public API key: it is safe to commit it
+        apiKey: "9bab4e48c02dee9bff1b5a4758937dc3",
+
+        indexName: "platformable",
+
+        // Optional: see doc section below
+        contextualSearch: true,
+
+        // Optional: Specify domains where the navigation should occur through window.location instead on history.push. Useful when our Algolia config crawls multiple documentation sites and we want to navigate with window.location.href to them.
+        // externalUrlRegex: 'external\\.com|domain\\.com',
+
+        // Optional: Replace parts of the item URLs from Algolia. Useful when using the same search index for multiple deployments using a different baseUrl. You can use regexp or string in the `from` param. For example: localhost:3000 vs myCompany.com/docs
+        // replaceSearchResultPathname: {
+        //   from: '/docs/', // or as RegExp: /\/docs\//
+        //   to: '/',
+        // },
+
+        // Optional: Algolia search parameters
+        // searchParameters: {},
+
+        // Optional: path for search page that enabled by default (`false` to disable it)
+        searchPagePath: "search",
+      },
       colorMode: {
         respectPrefersColorScheme: true,
       },
@@ -160,20 +187,18 @@ const config = {
         darkTheme: darkCodeTheme,
       },
       zoom: {
-        selector: '.markdown :not(em) > img',
+        selector: ".markdown :not(em) > img",
         background: {
-          light: 'rgb(255, 255, 255, 0.9)',
-          dark: 'rgb(30, 30, 30, 0.9)'
+          light: "rgb(255, 255, 255, 0.9)",
+          dark: "rgb(30, 30, 30, 0.9)",
         },
         config: {
           // options you can specify via https://github.com/francoischalifour/medium-zoom#usage
-        }
-      }
+        },
+      },
     }),
 
-  plugins: [
-    require.resolve('docusaurus-plugin-image-zoom')
-  ],
+  plugins: [require.resolve("docusaurus-plugin-image-zoom")],
 };
 
 module.exports = config;
